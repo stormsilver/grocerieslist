@@ -1,0 +1,3 @@
+* collapsible sections
+* auto switch to dark mode
+* empty drop zones when there are no items
