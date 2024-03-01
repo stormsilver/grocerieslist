@@ -154,6 +154,8 @@ const STORE_ITEMS_FROM_API = [
 
 // ===========================================================
 
+export const UNCATEGORIZED_CATEGORY_ID = -1;
+
 export class Api {
   #categories = [];
 
@@ -176,8 +178,8 @@ export class Api {
         return this.#items.reduce((acc, item) => {
           const category = this.#categories.find((c) => c.id === item.categoryId);
 
-          acc[category?.id] ||= [];
-          acc[category?.id].push(item);
+          acc[category?.id || UNCATEGORIZED_CATEGORY_ID] ||= [];
+          acc[category?.id || UNCATEGORIZED_CATEGORY_ID].push(item);
           return acc;
         }, {});
       },
@@ -254,7 +256,7 @@ export class Api {
         // const categoriesFromApi = CATEGORIES_FROM_API;
         const categoriesFromApi = await fetch('/api/categories').then((res) => res.json());
         // Add an "Uncategorized" category
-        categoriesFromApi.push({ id: undefined, name: 'Uncategorized' });
+        categoriesFromApi.push({ id: UNCATEGORIZED_CATEGORY_ID, name: 'Uncategorized' });
 
         return categoriesFromApi.map((categoryData) => {
           let category = this.#categories.find((c) => c.id === categoryData.id);

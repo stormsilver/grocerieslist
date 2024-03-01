@@ -9,12 +9,14 @@ import { SortableLists } from './SortableLists';
 import { SortableList } from './SortableList';
 import { SortableCategoryItem } from './list/SortableCategoryItem';
 import { sortByName } from '../util';
+import { UNCATEGORIZED_CATEGORY_ID } from '../api/Api';
 
 const AllItemsList = ({ itemsByCategory, categories }) => {
   const [sortedItems, setSortedItems] = useState({});
 
   // sort categories by name
   const sortedCategoryIds = useMemo(() => categories.sort(sortByName).map((category) => category.id), [categories]);
+  const allItems = useMemo(() => Object.values(itemsByCategory).flat(), [itemsByCategory]);
 
   useEffect(() => {
     // then sort the items in each category by name
@@ -25,7 +27,25 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
     setSortedItems(newSortedItems);
   }, [sortedCategoryIds, itemsByCategory]);
 
-  const allItems = useMemo(() => Object.values(itemsByCategory).flat(), [itemsByCategory]);
+  const onReordering = (d) => {
+    console.log('onReordering: ', d);
+    if (d.activeContainerId === d.overContainerId) return;
+
+    const { activeItem, activeContainerId, overContainerId } = d;
+    // move item from activeContainerId to overContainerId
+    const activeItems = sortedItems[activeContainerId] || [];
+    const overItems = sortedItems[overContainerId] || [];
+    const newActiveItems = activeItems.filter((item) => item.id !== activeItem.id);
+    const newOverItems = [...overItems, activeItem].sort(sortByName);
+    // set the new category
+    activeItem.categoryId = overContainerId === UNCATEGORIZED_CATEGORY_ID ? null : overContainerId;
+    setSortedItems({ ...sortedItems, [activeContainerId]: newActiveItems, [overContainerId]: newOverItems });
+  };
+
+  const onReordered = (d) => {
+    console.log('onReordered: ', d);
+  };
+
   const categorySections = sortedCategoryIds.map((categoryId, i) => {
     const category = categories.find((c) => c.id === categoryId);
     const items = sortedItems[categoryId] || [];
@@ -35,23 +55,6 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
       </Category>
     );
   });
-
-  const onReordering = (d) => {
-    // console.log('onReordering: ', d);
-    if (d.activeContainerId === d.overContainerId) return;
-
-    const { activeItem, activeContainerId, overContainerId } = d;
-    // move item from activeContainerId to overContainerId
-    const activeItems = sortedItems[activeContainerId];
-    const overItems = sortedItems[overContainerId];
-    const newActiveItems = activeItems.filter((item) => item.id !== activeItem.id);
-    const newOverItems = [...overItems, activeItem].sort(sortByName);
-    setSortedItems({ ...sortedItems, [activeContainerId]: newActiveItems, [overContainerId]: newOverItems });
-  };
-
-  const onReordered = (d) => {
-    console.log('onReordered: ', d);
-  };
 
   return (
     <SortableLists

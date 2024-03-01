@@ -15,7 +15,7 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
   };
 
   const handleDragOver = (event) => {
-    // console.log('drag over event: ', event);
+    console.log('drag over event: ', event);
     const { active, over } = event;
     const activeContainerId = active.data.current.sortable.containerId;
     const overContainerId = over.data.current.sortable.containerId;
