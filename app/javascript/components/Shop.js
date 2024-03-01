@@ -154,8 +154,6 @@ export const Shop = () => {
   const { currentStore } = useCurrentStore();
   const { data: itemsByStore } = useQuery(useApi().getItemsByStore());
 
-  console.log('itemsByStore: ', itemsByStore);
-
   if (!itemsByStore) {
     return null;
   }

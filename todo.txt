@@ -1,3 +1,10 @@
 * collapsible sections
 * auto switch to dark mode
 * empty drop zones when there are no items
+* save item state debounced
+* show saving indicator
+* edit item name
+* add new store
+* add new item
+* delete item
+* delete store

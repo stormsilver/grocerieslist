@@ -24,6 +24,7 @@ Bundler.require(*Rails.groups)
 
 module Groceries
   class Application < Rails::Application
+    config.active_record.sqlite3_production_warning = false
     config.api_only = true
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.1

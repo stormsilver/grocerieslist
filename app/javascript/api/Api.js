@@ -167,8 +167,19 @@ export class Api {
     return {
       queryKey: ['items-by-category'],
       queryFn: async () => {
-        const items = await this.#getItems();
-        return Object.groupBy(items, (item) => item.categoryId);
+        console.log('API: getItemsByCategory');
+        // refresh categories
+        await this.getCategories().queryFn();
+        // refresh items
+        await this.#getItems();
+
+        return this.#items.reduce((acc, item) => {
+          const category = this.#categories.find((c) => c.id === item.categoryId);
+
+          acc[category?.id] ||= [];
+          acc[category?.id].push(item);
+          return acc;
+        }, {});
       },
     };
   };
@@ -182,7 +193,6 @@ export class Api {
         await this.#getItems();
         // refresh stores
         await this.getStores().queryFn();
-        console.log('this.#stores: ', this.#stores);
 
         // const storeItemsFromApi = STORE_ITEMS_FROM_API;
         const storeItemsFromApi = await fetch('/api/store_items').then((res) => res.json());
@@ -243,6 +253,9 @@ export class Api {
         console.log('API: getCategories');
         // const categoriesFromApi = CATEGORIES_FROM_API;
         const categoriesFromApi = await fetch('/api/categories').then((res) => res.json());
+        // Add an "Uncategorized" category
+        categoriesFromApi.push({ id: undefined, name: 'Uncategorized' });
+
         return categoriesFromApi.map((categoryData) => {
           let category = this.#categories.find((c) => c.id === categoryData.id);
           if (!category) {
