@@ -1,5 +1,5 @@
 class StoreItemsController < ApplicationController
-  before_action :set_store_item, only: %i[ show update destroy ]
+  before_action :set_store_item, only: %i[show]
 
   # GET /store_items
   # GET /store_items.json
@@ -7,47 +7,53 @@ class StoreItemsController < ApplicationController
     @store_items = StoreItem.all
   end
 
-  # GET /store_items/1
-  # GET /store_items/1.json
-  def show
-  end
+  # PATCH/PUT /store_items
+  # PATCH/PUT /store_items.json
+  def update_bulk
+    Rails.logger.ap store_item_params_for_bulk_update
+    # split out any that are new
+    existing_items, new_items = store_item_params_for_bulk_update.partition { |item| item[:id] }
 
-  # POST /store_items
-  # POST /store_items.json
-  def create
-    @store_item = StoreItem.new(store_item_params)
+    # split out any that need to be destroyed
+    items_to_destroy = existing_items.select { |item| item[:_destroy] }
 
-    if @store_item.save
-      render :show, status: :created, location: @store_item
-    else
-      render json: @store_item.errors, status: :unprocessable_entity
+    # split out any that need to be updated
+    items_to_update = existing_items.index_by { |item| item[:id] }
+
+    ActiveRecord::Base.transaction do
+      StoreItem.create!(allow_create_values(new_items))
+      StoreItem.destroy(items_to_destroy.map { |item| item[:id] })
+      StoreItem.update!(items_to_update.keys, allow_update_values(items_to_update.values))
     end
-  end
-
-  # PATCH/PUT /store_items/1
-  # PATCH/PUT /store_items/1.json
-  def update
-    if @store_item.update(store_item_params)
-      render :show, status: :ok, location: @store_item
-    else
-      render json: @store_item.errors, status: :unprocessable_entity
-    end
-  end
-
-  # DELETE /store_items/1
-  # DELETE /store_items/1.json
-  def destroy
-    @store_item.destroy!
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_store_item
-      @store_item = StoreItem.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def store_item_params
-      params.fetch(:store_item, {})
+  # Use callbacks to share common setup or constraints between actions.
+  def set_store_item
+    @store_item = StoreItem.find(params[:id])
+  end
+
+  def store_item_params_for_bulk_update
+    params.require(:store_items).collect do |item_params|
+      item_params.permit(:id, :store_id, :order, :item_id, :_destroy)
     end
+  end
+
+  def allow_update_values(values)
+    values.map do |value|
+      value.slice(:order)
+    end
+  end
+
+  def allow_create_values(new_items)
+    new_items.collect do |item_data|
+      {
+        store_id: item_data[:store_id],
+        order: item_data[:order],
+        item_id: item_data[:item_id],
+        account_id: Current.account.id
+      }
+    end
+  end
 end

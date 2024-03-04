@@ -7,7 +7,7 @@ import { ShopItems } from './shop/ShopItems';
 import { sortByName } from '../util';
 import { useCurrentStore } from '../contexts/CurrentStoreContext';
 import { useApi } from '../contexts/ApiContext';
-import { ShopItem } from './shop/ShopItem';
+import { Item } from './Item';
 import { SortableLists } from './SortableLists';
 import { StoreItem } from '../models/StoreItem';
 
@@ -22,6 +22,7 @@ const updateOrderedItems = (orderedItems, activeItem, overItem) => {
 };
 
 const ShoppingList = ({ currentStore, itemsByStore }) => {
+  const { sync, api } = useApi();
   const [sortedItems, setSortedItems] = useState({
     'current-ordered': [],
     'current-unordered': [],
@@ -33,6 +34,7 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
   }, [itemsByStore]);
 
   useEffect(() => {
+    console.log('recomputing Shop sortedItems');
     const currentStoreItems = itemsByStore[currentStore.id];
     const otherStoreItems = Object.entries(itemsByStore).flatMap(([storeId, storeItems]) =>
       storeId === currentStore.id ? [] : storeItems
@@ -79,23 +81,24 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
         switch (d.overContainerId) {
           case 'current-ordered':
             // eslint-disable-next-line no-case-declarations
-            let { activeItem } = d;
+            const { activeItem } = d;
             if (activeItem.store?.id !== currentStore.id) {
-              activeItem = new StoreItem();
-              activeItem.updateFromApi({ ...d.activeItem, store: currentStore });
-              // replace item with new item
-              const index = newItems['current-ordered'].findIndex((item) => item.id === d.activeItem.id);
-              newItems['current-ordered'][index] = activeItem;
+              activeItem.markForNew();
             }
+            activeItem.unmarkForDeletion();
             newItems['current-ordered'] = updateOrderedItems(newItems['current-ordered'], activeItem, d.overItem);
             break;
           case 'current-unordered':
             // remove the order from the item
             d.activeItem.order = null;
+            d.activeItem.unmarkForDeletion();
             break;
           case 'other-stores':
             // remove the store from the item
-            d.activeItem.store = null;
+            // d.activeItem.store = null;
+            // d.activeItem.delete();
+            d.activeItem.unmarkForNew();
+            d.activeItem.markForDeletion();
             break;
 
           default:
@@ -115,13 +118,24 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
 
   const onReordered = (d) => {
     console.log('onReordered: ', d);
+    const { activeItem } = d;
+
+    if (activeItem.isMarkedForNew) {
+      // create new item
+      api.createStoreItem(new StoreItem({ ...d.activeItem, store: currentStore }));
+      // activeItem = ;
+      // replace item with new item
+      // const index = newItems['current-ordered'].findIndex((item) => item.id === d.activeItem.id);
+      // if (index !== -1) newItems['current-ordered'][index] = activeItem;
+    }
 
     // save
+    sync();
   };
 
   return (
     <SortableLists
-      dragOverlayComponent={ShopItem}
+      dragOverlayComponent={Item}
       allItems={allItems}
       onReordering={onReordering}
       onReordered={onReordered}
@@ -152,7 +166,7 @@ const NoStoreSelected = () => {
 
 export const Shop = () => {
   const { currentStore } = useCurrentStore();
-  const { data: itemsByStore } = useQuery(useApi().getItemsByStore());
+  const { data: itemsByStore } = useQuery(useApi().api.getItemsByStore());
 
   if (!itemsByStore) {
     return null;

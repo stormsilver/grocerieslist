@@ -57,3 +57,14 @@ main {
     padding-bottom: 0.2rem;
   }
 }
+
+.sync-state {
+  z-index: 2;
+  position: fixed;
+  top: 0.25rem;
+  right: 0.25rem;
+}
+
+.drag-handle {
+  touch-action: none;
+}

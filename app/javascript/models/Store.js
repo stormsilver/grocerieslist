@@ -1,6 +1,6 @@
-export class Store {
-  id;
+import { ApiModel } from './ApiModel';
 
+export class Store extends ApiModel {
   name;
 
   updateFromApi({ id, name }) {

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { DragOverlay, DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { DragOverlay, DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
 export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, onReordered, children }) => {
   const [activeItem, setActiveItem] = useState(null);
-  const sensors = useSensors(useSensor(PointerSensor));
+  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
   const DragOverlayItem = dragOverlayComponent;
 

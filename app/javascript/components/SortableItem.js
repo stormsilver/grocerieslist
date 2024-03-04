@@ -1,8 +1,9 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { ShopItem } from './ShopItem';
+import { Item } from './Item';
+import { DragHandle } from './DragHandle';
 
-export const SortableShopItem = ({ item }) => {
+export const SortableItem = ({ item }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
   const style = {
@@ -10,5 +11,11 @@ export const SortableShopItem = ({ item }) => {
     transition,
   };
 
-  return <ShopItem item={item} ref={setNodeRef} style={style} {...attributes} {...listeners} />;
+  return (
+    <Item item={item} ref={setNodeRef} style={style}>
+      <div {...attributes} {...listeners}>
+        <DragHandle />
+      </div>
+    </Item>
+  );
 };

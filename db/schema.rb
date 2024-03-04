@@ -56,6 +56,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_store_items_on_account_id"
     t.index ["item_id"], name: "index_store_items_on_item_id"
+    t.index ["store_id", "item_id"], name: "index_store_items_on_store_id_and_item_id", unique: true
     t.index ["store_id"], name: "index_store_items_on_store_id"
   end
 

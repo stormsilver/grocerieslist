@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useCurrentStore } from '../contexts/CurrentStoreContext';
 import { useApi } from '../contexts/ApiContext';
-import { useQuery } from '../hooks/useQuery';
 
 export const StoreSelector = () => {
   const { currentStore, setCurrentStore } = useCurrentStore();
-  const { data: stores } = useQuery(useApi().getStores());
+  const { data: stores } = useQuery(useApi().api.getStores());
   const options = [<option key={0} value={0}></option>];
 
   useEffect(() => {

@@ -1,10 +1,23 @@
-* collapsible sections
-* auto switch to dark mode
-* empty drop zones when there are no items
-* save item state debounced
-* show saving indicator
+* need to assign "ui ID" to each item, so that it can be referenced in the drag and drop
+  -- this is a unique identifier that is not the same as the database ID
+  -- can assign this in API.js
+* list page:
+  * search bar
+* dragging and scrolling is slow, should be fast???
 * edit item name
+* empty drop zones when there are no items
 * add new store
 * add new item
 * delete item
 * delete store
+* collapsible sections
+* auto switch to dark mode
+* rename store? (requires setup section)
+* dirty tracking on edited things
+* style drag overlay better
+  - opaque background
+  - big drop shadow
+
+# Offline First
+  https://electric-sql.com
+  https://neon.tech

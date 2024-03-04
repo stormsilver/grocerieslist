@@ -7,7 +7,7 @@ export const SortableList = ({ containerId, items, sortableItemComponent }) => {
     <>
       <SortableContext id={containerId} items={items} strategy={verticalListSortingStrategy}>
         {items.map((item) => (
-          <SortableItem key={item.id} item={item} />
+          <SortableItem key={item.itemId} item={item} />
         ))}
       </SortableContext>
     </>

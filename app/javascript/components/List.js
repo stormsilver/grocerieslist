@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { AddButton } from './AddButton';
 import { Search } from './Search';
 import { Category } from './list/Category';
-import { CategoryItem } from './list/CategoryItem';
+import { Item } from './Item';
 import { useApi } from '../contexts/ApiContext';
-import { useQuery } from '../hooks/useQuery';
 import { SortableLists } from './SortableLists';
 import { SortableList } from './SortableList';
-import { SortableCategoryItem } from './list/SortableCategoryItem';
+import { SortableItem } from './SortableItem';
 import { sortByName } from '../util';
 import { UNCATEGORIZED_CATEGORY_ID } from '../api/Api';
 
 const AllItemsList = ({ itemsByCategory, categories }) => {
+  const { sync } = useApi();
   const [sortedItems, setSortedItems] = useState({});
 
   // sort categories by name
@@ -19,6 +20,7 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
   const allItems = useMemo(() => Object.values(itemsByCategory).flat(), [itemsByCategory]);
 
   useEffect(() => {
+    console.log('recomputing List sortedItems');
     // then sort the items in each category by name
     const newSortedItems = {};
     sortedCategoryIds.forEach((categoryId) => {
@@ -28,7 +30,7 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
   }, [sortedCategoryIds, itemsByCategory]);
 
   const onReordering = (d) => {
-    console.log('onReordering: ', d);
+    // console.log('onReordering: ', d);
     if (d.activeContainerId === d.overContainerId) return;
 
     const { activeItem, activeContainerId, overContainerId } = d;
@@ -44,6 +46,7 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
 
   const onReordered = (d) => {
     console.log('onReordered: ', d);
+    sync();
   };
 
   const categorySections = sortedCategoryIds.map((categoryId, i) => {
@@ -51,14 +54,14 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
     const items = sortedItems[categoryId] || [];
     return (
       <Category key={i} category={category}>
-        <SortableList containerId={category.id} items={items} sortableItemComponent={SortableCategoryItem} />
+        <SortableList containerId={category.id} items={items} sortableItemComponent={SortableItem} />
       </Category>
     );
   });
 
   return (
     <SortableLists
-      dragOverlayComponent={CategoryItem}
+      dragOverlayComponent={Item}
       allItems={allItems}
       onReordering={onReordering}
       onReordered={onReordered}
@@ -69,7 +72,7 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
 };
 
 export const List = () => {
-  const api = useApi();
+  const { api } = useApi();
   const { data: categories } = useQuery(api.getCategories());
   const { data: itemsByCategory } = useQuery(api.getItemsByCategory());
   if (!itemsByCategory || !categories) return null;

@@ -7,6 +7,8 @@ class CreateStoreItems < ActiveRecord::Migration[7.1]
       t.belongs_to :item, null: false, foreign_key: true
       t.belongs_to :account, null: false, foreign_key: true
       t.timestamps
+
+      t.index %i[store_id item_id], unique: true
     end
   end
 end

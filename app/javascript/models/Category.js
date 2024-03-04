@@ -1,6 +1,6 @@
-export class Category {
-  id;
+import { ApiModel } from './ApiModel';
 
+export class Category extends ApiModel {
   name;
 
   updateFromApi({ id, name }) {

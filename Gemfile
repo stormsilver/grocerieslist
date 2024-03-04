@@ -59,6 +59,7 @@ group :development do
   gem "dockerfile-rails", ">= 1.6"
 
   gem 'derailed_benchmarks', github: 'zombocom/derailed_benchmarks', branch: 'main'
+  gem "rubocop", "~> 1.61"
 end
 
 # group :test do
@@ -66,3 +67,5 @@ end
 #   gem "capybara"
 #   gem "selenium-webdriver"
 # end
+
+gem "awesome_print", "~> 1.9"
