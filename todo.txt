@@ -1,11 +1,6 @@
-* need to assign "ui ID" to each item, so that it can be referenced in the drag and drop
-  -- this is a unique identifier that is not the same as the database ID
-  -- can assign this in API.js
-* list page:
-  * search bar
+* empty drop zones when there are no items
 * dragging and scrolling is slow, should be fast???
 * edit item name
-* empty drop zones when there are no items
 * add new store
 * add new item
 * delete item

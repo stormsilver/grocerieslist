@@ -2,29 +2,55 @@ import { Store } from '../models/Store';
 import { StoreItem } from '../models/StoreItem';
 import { Item } from '../models/Item';
 import { Category } from '../models/Category';
+import { BagOfHolding } from './BagOfHolding';
 
 export const UNCATEGORIZED_CATEGORY_ID = -1;
+const DEBUG = true;
 
 export class Api {
-  #categories = [];
+  #categories = new BagOfHolding({
+    apiPath: '/api/categories',
+    key: 'categories',
+    klass: Category,
+    afterFetch: (categories) => {
+      // Add an "Uncategorized" category
+      categories.push({ id: UNCATEGORIZED_CATEGORY_ID, name: 'Uncategorized' });
+    },
+  });
 
-  #stores = [];
+  #stores = new BagOfHolding({ apiPath: '/api/stores', key: 'stores', klass: Store });
 
-  #items = [];
+  #items = new BagOfHolding({ apiPath: '/api/items', key: 'items', klass: Item });
 
-  #storeItems = [];
+  #storeItems = new BagOfHolding({
+    apiPath: '/api/store_items',
+    key: 'storeItems',
+    klass: StoreItem,
+    beforeInstantiation: (storeItemData) => {
+      if (storeItemData.storeId) {
+        storeItemData.store = this.#stores.findOne(storeItemData.storeId);
+        if (!storeItemData.store) {
+          throw new Error(`Store not found for storeItemData: ${JSON.stringify(storeItemData)}`);
+        }
+      }
+      storeItemData.item = this.#items.findOne(storeItemData.itemId);
+      if (!storeItemData.item) {
+        throw new Error(`Item not found for storeItemData: ${JSON.stringify(storeItemData)}`);
+      }
+    },
+  });
 
   synchronize = async () => {
     console.log('API: synchronize');
 
-    return Promise.all([
-      // save stores
-      // save categories
-      // save items
-      // this.#saveItems(),
-      // save store items
-      this.#saveStoreItems(),
-    ]);
+    if (DEBUG) {
+      await this.#categories.save();
+      await this.#stores.save();
+      await this.#items.save();
+      await this.#storeItems.save();
+      return Promise.resolve();
+    }
+    return Promise.all([this.#categories.save(), this.#stores.save(), this.#items.save(), this.#storeItems.save()]);
   };
 
   getItemsByCategory = () => {
@@ -32,20 +58,16 @@ export class Api {
       queryKey: ['items-by-category'],
       queryFn: async () => {
         console.log('API: getItemsByCategory');
-        if (this.#categories.length === 0) {
-          // fetch categories
-          await this.getCategories().queryFn();
-        }
-        if (this.#items.length === 0) {
-          // fetch items
-          await this.#getItems();
-        }
 
-        return this.#items.reduce((acc, item) => {
-          const category = this.#categories.find((c) => c.id === item.categoryId);
+        await this.#categories.fetchAllIfEmpty();
+        const items = await this.#items.fetchAllIfEmpty();
 
-          acc[category?.id || UNCATEGORIZED_CATEGORY_ID] ||= [];
-          acc[category?.id || UNCATEGORIZED_CATEGORY_ID].push(item);
+        return items.reduce((acc, item) => {
+          const category = this.#categories.findOne(item.categoryId);
+          const categoryId = category?.id || UNCATEGORIZED_CATEGORY_ID;
+
+          acc[categoryId] ||= [];
+          acc[categoryId].push(item);
           return acc;
         }, {});
       },
@@ -57,38 +79,13 @@ export class Api {
       queryKey: ['items-by-store'],
       queryFn: async () => {
         console.log('API: getItemsByStore');
-        if (this.#items.length === 0) {
-          // fetch items
-          await this.#getItems();
-        }
-        if (this.#stores.length === 0) {
-          // fetch stores
-          await this.getStores().queryFn();
-        }
 
-        const storeItemsFromApi = await fetch('/api/store_items').then((res) => res.json());
-        const storeItems = storeItemsFromApi.map((storeItemData) => {
-          let storeItem = this.#storeItems.find((si) => si.id === storeItemData.id);
-          if (!storeItem) {
-            storeItem = new StoreItem();
-            this.#storeItems.push(storeItem);
-          }
-          if (storeItemData.storeId) {
-            storeItemData.store = this.#stores.find((s) => s.id === storeItemData.storeId);
-            if (!storeItemData.store) {
-              throw new Error(`Store not found for storeItemData: ${JSON.stringify(storeItemData)}`);
-            }
-          }
-          storeItemData.item = this.#items.find((i) => i.id === storeItemData.itemId);
-          if (!storeItemData.item) {
-            throw new Error(`Item not found for storeItemData: ${JSON.stringify(storeItemData)}`);
-          }
-          storeItem.updateFromApi(storeItemData);
-          return storeItem;
-        });
+        await this.#stores.fetchAllIfEmpty();
+        const items = await this.#items.fetchAllIfEmpty();
+        const storeItems = await this.#storeItems.fetchAll();
 
         // build a StoreItem for any item that doesn't have a storeItem
-        this.#items.forEach((item) => {
+        items.forEach((item) => {
           if (!storeItems.some((si) => si.itemId === item.id)) {
             storeItems.push(new StoreItem({ item }));
           }
@@ -105,7 +102,8 @@ export class Api {
 
   createStoreItem = (storeItem) => {
     console.log('API: createStoreItem');
-    this.#storeItems.push(storeItem);
+
+    this.#storeItems.createOne(storeItem);
   };
 
   getStores = () => {
@@ -114,16 +112,7 @@ export class Api {
       queryFn: async () => {
         console.log('API: getStores');
 
-        const storesFromApi = await fetch('/api/stores').then((res) => res.json());
-        return storesFromApi.map((storeData) => {
-          let store = this.#stores.find((s) => s.id === storeData.id);
-          if (!store) {
-            store = new Store();
-            this.#stores.push(store);
-          }
-          store.updateFromApi(storeData);
-          return store;
-        });
+        return this.#stores.fetchAll();
       },
     };
   };
@@ -134,63 +123,8 @@ export class Api {
       queryFn: async () => {
         console.log('API: getCategories');
 
-        const categoriesFromApi = await fetch('/api/categories').then((res) => res.json());
-        // Add an "Uncategorized" category
-        categoriesFromApi.push({ id: UNCATEGORIZED_CATEGORY_ID, name: 'Uncategorized' });
-
-        return categoriesFromApi.map((categoryData) => {
-          let category = this.#categories.find((c) => c.id === categoryData.id);
-          if (!category) {
-            category = new Category();
-            this.#categories.push(category);
-          }
-          category.updateFromApi(categoryData);
-          return category;
-        });
+        return this.#categories.fetchAll();
       },
     };
-  };
-
-  #getItems = async () => {
-    console.log('API: getItems');
-
-    const itemsFromApi = await fetch('/api/items').then((res) => res.json());
-    return itemsFromApi.map((itemData) => {
-      let item = this.#items.find((i) => i.id === itemData.id);
-      if (!item) {
-        item = new Item();
-        this.#items.push(item);
-      }
-      item.updateFromApi(itemData);
-      return item;
-    });
-  };
-
-  #saveItems = async () => {
-    console.log('API: saveItems');
-
-    const body = this.#items.map((item) => item.toApi());
-
-    return fetch(`/api/items`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ items: body }),
-    });
-  };
-
-  #saveStoreItems = async () => {
-    console.log('API: saveStoreItems');
-
-    const body = this.#storeItems.map((item) => item.toApi());
-
-    return fetch(`/api/store_items`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ storeItems: body }),
-    });
   };
 }

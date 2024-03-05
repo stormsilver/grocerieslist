@@ -15,10 +15,10 @@ class StoreItemsController < ApplicationController
     existing_items, new_items = store_item_params_for_bulk_update.partition { |item| item[:id] }
 
     # split out any that need to be destroyed
-    items_to_destroy = existing_items.select { |item| item[:_destroy] }
+    items_to_destroy, items_to_update = existing_items.partition { |item| item[:_destroy] }
 
     # split out any that need to be updated
-    items_to_update = existing_items.index_by { |item| item[:id] }
+    items_to_update = items_to_update.index_by { |item| item[:id] }
 
     ActiveRecord::Base.transaction do
       StoreItem.create!(allow_create_values(new_items))

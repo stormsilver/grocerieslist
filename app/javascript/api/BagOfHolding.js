@@ -11,18 +11,35 @@ export class BagOfHolding {
 
   #beforeInstantiation;
 
-  constructor({ apiPath, key, klass, beforeInstantiation = null }) {
+  #afterFetch;
+
+  constructor({ apiPath, key, klass, beforeInstantiation = null, afterFetch = null }) {
     this.apiPath = apiPath;
     this.klass = klass;
     this.key = key;
     this.#storage = {};
     this.#beforeInstantiation = beforeInstantiation;
+    this.#afterFetch = afterFetch;
 
     this.#reset();
   }
 
+  get isEmpty() {
+    return Object.keys(this.#storage).length === 0;
+  }
+
+  async fetchAllIfEmpty() {
+    if (this.isEmpty) {
+      return this.fetchAll();
+    }
+    return Object.values(this.#storage);
+  }
+
   async fetchAll() {
     const dataFromApi = await fetch(this.apiPath).then((res) => res.json());
+    if (this.#afterFetch) {
+      this.#afterFetch(dataFromApi);
+    }
     this.#reset();
 
     return dataFromApi.map((data) => {
@@ -46,7 +63,7 @@ export class BagOfHolding {
   }
 
   async save() {
-    const body = (this.#newInstances + Object.values(this.#storage)).map((instance) => instance.toApi());
+    const body = this.#newInstances.concat(Object.values(this.#storage)).map((instance) => instance.toApi());
     await fetch(this.apiPath, {
       method: 'PATCH',
       headers: {
@@ -54,6 +71,7 @@ export class BagOfHolding {
       },
       body: JSON.stringify({ [this.key]: body }),
     });
+    this.#reset();
   }
 
   #reset() {

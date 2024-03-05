@@ -95,8 +95,6 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
             break;
           case 'other-stores':
             // remove the store from the item
-            // d.activeItem.store = null;
-            // d.activeItem.delete();
             d.activeItem.unmarkForNew();
             d.activeItem.markForDeletion();
             break;
@@ -123,10 +121,6 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
     if (activeItem.isMarkedForNew) {
       // create new item
       api.createStoreItem(new StoreItem({ ...d.activeItem, store: currentStore }));
-      // activeItem = ;
-      // replace item with new item
-      // const index = newItems['current-ordered'].findIndex((item) => item.id === d.activeItem.id);
-      // if (index !== -1) newItems['current-ordered'][index] = activeItem;
     }
 
     // save

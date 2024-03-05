@@ -72,19 +72,43 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
 };
 
 export const List = () => {
+  const [filteredItemsByCategory, setFilteredItemsByCategory] = useState({});
+  const [searchTerm, setSearchTerm] = useState('');
   const { api } = useApi();
   const { data: categories } = useQuery(api.getCategories());
   const { data: itemsByCategory } = useQuery(api.getItemsByCategory());
+
+  useEffect(() => {
+    if (!itemsByCategory) return;
+
+    if (searchTerm.length === 0) {
+      setFilteredItemsByCategory(itemsByCategory);
+      return;
+    }
+
+    // do the search by filtering itemsByCategory
+    const filteredEntries = Object.entries(itemsByCategory).map(([categoryId, items]) => {
+      return [categoryId, items.filter((item) => item.name.toLowerCase().includes(searchTerm.toLowerCase()))];
+    });
+
+    setFilteredItemsByCategory(Object.fromEntries(filteredEntries));
+  }, [itemsByCategory, searchTerm]);
+
   if (!itemsByCategory || !categories) return null;
+
+  const onSearch = (newSearchTerm) => {
+    console.log('searching for: ', newSearchTerm);
+    setSearchTerm(newSearchTerm);
+  };
 
   return (
     <div className="list-page">
       <div className="list-searchbar d-flex container-fluid">
-        <Search />
+        <Search onSearch={onSearch} searchTerm={searchTerm} />
         <AddButton />
       </div>
 
-      <AllItemsList categories={categories} itemsByCategory={itemsByCategory} />
+      <AllItemsList categories={categories} itemsByCategory={filteredItemsByCategory} />
     </div>
   );
 };
