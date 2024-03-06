@@ -24,7 +24,7 @@ export const Item = React.forwardRef(({ item, children, ...props }, ref) => {
       <div className="justify-content-start">
         <CheckCircle id={`item-${item.id}`} checked={checked} onChange={onCheckUncheck} />
         <input type="text" value={name} onChange={onItemNameChange} />
-        (id: {item.id}, itemId: {item.itemId} order: {item.order}, store: {item.store?.id}, category: {item.categoryId})
+        {/* (id: {item.id}, itemId: {item.itemId} order: {item.order}, store: {item.store?.id}, category: {item.categoryId}) */}
       </div>
       {children}
     </div>

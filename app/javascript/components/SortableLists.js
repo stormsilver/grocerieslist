@@ -1,6 +1,23 @@
 import { useState } from 'react';
 import { DragOverlay, DndContext, closestCenter, MouseSensor, TouchSensor, useSensor, useSensors } from '@dnd-kit/core';
 
+const reorderPropsFromDragEvent = (event, allItems) => {
+  const { active, over } = event;
+
+  const currentActive = active.data.current;
+  const currentOver = over.data.current;
+
+  const activeContainerId = currentActive.sortable ? currentActive.sortable.containerId : currentActive.containerId;
+  const overContainerId = currentOver.sortable ? currentOver.sortable.containerId : currentOver.containerId;
+
+  return {
+    activeContainerId,
+    activeItem: allItems.find((item) => item.id === active.id),
+    overContainerId,
+    overItem: allItems.find((item) => item.id === over.id),
+  };
+};
+
 export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, onReordered, children }) => {
   const [activeItem, setActiveItem] = useState(null);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
@@ -16,33 +33,22 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
 
   const handleDragOver = (event) => {
     console.log('drag over event: ', event);
-    const { active, over } = event;
-    const activeContainerId = active.data.current.sortable.containerId;
-    const overContainerId = over.data.current.sortable.containerId;
 
-    if (active.id === over.id) return;
+    const reorderProps = reorderPropsFromDragEvent(event, allItems);
 
-    onReordering({
-      activeContainerId,
-      activeItem: allItems.find((item) => item.id === active.id),
-      overContainerId,
-      overItem: allItems.find((item) => item.id === over.id),
-    });
+    if (reorderProps.activeItem.id === reorderProps.overItem?.id) return;
+
+    onReordering(reorderProps);
   };
 
   const handleDragEnd = (event) => {
     // console.log('drag end event: ', event);
-    const { active, over } = event;
-    const activeContainerId = active.data.current.sortable.containerId;
-    const overContainerId = over.data.current.sortable.containerId;
 
     setActiveItem(null);
-    onReordered({
-      activeContainerId,
-      activeItem: allItems.find((item) => item.id === active.id),
-      overContainerId,
-      overItem: allItems.find((item) => item.id === over.id),
-    });
+
+    const reorderProps = reorderPropsFromDragEvent(event, allItems);
+
+    onReordered(reorderProps);
   };
 
   return (

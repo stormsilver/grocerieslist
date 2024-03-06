@@ -17,7 +17,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["account_id", "user_id"], name: "index_account_users_on_account_id_and_user_id", unique: true
-    t.index ["account_id"], name: "index_account_users_on_account_id"
     t.index ["user_id"], name: "index_account_users_on_user_id"
   end
 
@@ -42,13 +41,12 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id"], name: "index_items_on_account_id"
+    t.index ["account_id", "name"], name: "index_items_on_account_id_and_name", unique: true
     t.index ["category_id"], name: "index_items_on_category_id"
   end
 
   create_table "store_items", force: :cascade do |t|
     t.integer "order"
-    t.boolean "available", default: true
     t.integer "store_id"
     t.integer "item_id", null: false
     t.integer "account_id", null: false
@@ -57,7 +55,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.index ["account_id"], name: "index_store_items_on_account_id"
     t.index ["item_id"], name: "index_store_items_on_item_id"
     t.index ["store_id", "item_id"], name: "index_store_items_on_store_id_and_item_id", unique: true
-    t.index ["store_id"], name: "index_store_items_on_store_id"
   end
 
   create_table "stores", force: :cascade do |t|

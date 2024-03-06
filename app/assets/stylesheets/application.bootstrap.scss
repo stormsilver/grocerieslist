@@ -40,12 +40,12 @@ main {
     background-color: var(--bs-secondary-bg);
   }
 
-  .list-item {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    margin-top: 1em;
-  }
+  // .list-item {
+  //   display: flex;
+  //   flex-wrap: wrap;
+  //   justify-content: space-between;
+  //   margin-top: 1em;
+  // }
 }
 
 .shop-page {
@@ -67,4 +67,15 @@ main {
 
 .drag-handle {
   touch-action: none;
+}
+
+.empty-drop-zone {
+  min-height: 3rem;
+  &.drag-over {
+    background-color: var(--bs-secondary-bg);
+  }
+}
+
+.sortable-list {
+  margin-bottom: 1.5rem;
 }

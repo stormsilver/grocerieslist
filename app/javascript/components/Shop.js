@@ -13,7 +13,7 @@ import { StoreItem } from '../models/StoreItem';
 
 const updateOrderedItems = (orderedItems, activeItem, overItem) => {
   const activeIndex = orderedItems.findIndex((item) => item.id === activeItem.id);
-  const overIndex = orderedItems.findIndex((item) => item.id === overItem.id);
+  const overIndex = overItem ? orderedItems.findIndex((item) => item.id === overItem.id) : 0;
   const newItems = arrayMove(orderedItems, activeIndex, overIndex);
   newItems.forEach((item, index) => {
     item.order = index + 1;

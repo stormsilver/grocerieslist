@@ -1,17 +1,33 @@
-* empty drop zones when there are no items
-* dragging and scrolling is slow, should be fast???
-* edit item name
-* add new store
-* add new item
-* delete item
-* delete store
-* collapsible sections
-* auto switch to dark mode
-* rename store? (requires setup section)
-* dirty tracking on edited things
-* style drag overlay better
-  - opaque background
-  - big drop shadow
+# Demo to Joanna
+  * add new item
+  * delete item
+  * add category
+  * seed production with data from Notes.app
+  * button: "Generate list"
+    - hides everything currently checked
+    - button changes to "show everything": shows everything
+    - when  in "gnerate list" mode, do not remove items as they are checked
+
+# We can use it here
+  * add new store
+  * dragging and scrolling is slow, should be fast???
+  * shop tab should have sticky section headers
+
+# Other stuff
+  * a nice coat of paint
+  * delete store
+  * delete category
+  * collapsible sections
+  * auto switch to dark mode
+  * rename store? (requires setup section)
+  * dirty tracking on edited things
+  * style drag overlay better
+    - opaque background
+    - big drop shadow
+  * remember which tab was last open and load it on refresh
+    - remember which store was selected
+  * authn/authz
+
 
 # Offline First
   https://electric-sql.com
