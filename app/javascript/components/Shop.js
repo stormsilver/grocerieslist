@@ -10,6 +10,7 @@ import { useApi } from '../contexts/ApiContext';
 import { Item } from './Item';
 import { SortableLists } from './SortableLists';
 import { StoreItem } from '../models/StoreItem';
+import { NeededItemsToggle } from './shop/NeededItemsToggle';
 
 const updateOrderedItems = (orderedItems, activeItem, overItem) => {
   const activeIndex = orderedItems.findIndex((item) => item.id === activeItem.id);
@@ -21,7 +22,7 @@ const updateOrderedItems = (orderedItems, activeItem, overItem) => {
   return newItems;
 };
 
-const ShoppingList = ({ currentStore, itemsByStore }) => {
+const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
   const { sync, api } = useApi();
   const [sortedItems, setSortedItems] = useState({
     'current-ordered': [],
@@ -135,20 +136,28 @@ const ShoppingList = ({ currentStore, itemsByStore }) => {
       onReordered={onReordered}
     >
       <div className="shop-list-ordered">
-        <ShopItems items={sortedItems['current-ordered']} containerId="current-ordered" />
+        <ShopItems
+          items={sortedItems['current-ordered']}
+          containerId="current-ordered"
+          neededItemsOnly={neededItemsOnly}
+        />
       </div>
       <div className="shop-list-unordered">
         <div className="container-fluid d-flex justify-content-between">
           <h6 className="display-6">Unordered</h6>
           <AddButton />
         </div>
-        <ShopItems items={sortedItems['current-unordered']} containerId="current-unordered" />
+        <ShopItems
+          items={sortedItems['current-unordered']}
+          containerId="current-unordered"
+          neededItemsOnly={neededItemsOnly}
+        />
       </div>
       <div className="shop-other-stores">
         <div className="container-fluid">
           <h6 className="display-6">Not at this store</h6>
         </div>
-        <ShopItems items={sortedItems['other-stores']} containerId="other-stores" />
+        <ShopItems items={sortedItems['other-stores']} containerId="other-stores" neededItemsOnly={neededItemsOnly} />
       </div>
     </SortableLists>
   );
@@ -160,19 +169,43 @@ const NoStoreSelected = () => {
 
 export const Shop = () => {
   const { currentStore } = useCurrentStore();
+  const [neededItemsOnly, setNeededItemsOnly] = useState(false);
   const { data: itemsByStore } = useQuery(useApi().api.getItemsByStore());
 
   if (!itemsByStore) {
     return null;
   }
 
+  const onToggleNeededItems = () => {
+    setNeededItemsOnly((prevNeededItemsOnly) => {
+      const newNeededItemsOnly = !prevNeededItemsOnly;
+
+      Object.entries(itemsByStore).forEach(([_storeId, storeItems]) => {
+        storeItems.forEach((item) => {
+          item.hidden = newNeededItemsOnly && !item.needed;
+        });
+      });
+
+      return newNeededItemsOnly;
+    });
+  };
+
   return (
     <div className="shop-page">
-      <div className="shop-store-selector container-fluid">
-        <StoreSelector />
+      <div className="shop-store-selector row g-2 container-fluid">
+        <div className="col-8">
+          <StoreSelector />
+        </div>
+        <div className="col-4 text-end">
+          <NeededItemsToggle neededItemsOnly={neededItemsOnly} onToggle={onToggleNeededItems} />
+        </div>
       </div>
 
-      {currentStore ? <ShoppingList currentStore={currentStore} itemsByStore={itemsByStore} /> : <NoStoreSelected />}
+      {currentStore ? (
+        <ShoppingList currentStore={currentStore} itemsByStore={itemsByStore} neededItemsOnly={neededItemsOnly} />
+      ) : (
+        <NoStoreSelected />
+      )}
     </div>
   );
 };

@@ -1,17 +1,18 @@
 # Demo to Joanna
+
   * add new item
   * delete item
   * add category
-  * seed production with data from Notes.app
-  * button: "Generate list"
-    - hides everything currently checked
-    - button changes to "show everything": shows everything
-    - when  in "gnerate list" mode, do not remove items as they are checked
+
+
 
 # We can use it here
   * add new store
   * dragging and scrolling is slow, should be fast???
   * shop tab should have sticky section headers
+
+
+
 
 # Other stuff
   * a nice coat of paint

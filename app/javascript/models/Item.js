@@ -7,6 +7,8 @@ export class Item extends ApiModel {
 
   categoryId;
 
+  hidden;
+
   get itemId() {
     return this.id;
   }

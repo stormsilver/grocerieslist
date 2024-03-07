@@ -25,6 +25,13 @@ main {
   padding-top: var(--groceries-navbar-height);
 }
 
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+}
+
 .list-page {
   .list-searchbar {
     position: sticky;
@@ -39,13 +46,6 @@ main {
     top: calc(var(--groceries-navbar-height) + var(--groceries-searchbar-height));
     background-color: var(--bs-secondary-bg);
   }
-
-  // .list-item {
-  //   display: flex;
-  //   flex-wrap: wrap;
-  //   justify-content: space-between;
-  //   margin-top: 1em;
-  // }
 }
 
 .shop-page {

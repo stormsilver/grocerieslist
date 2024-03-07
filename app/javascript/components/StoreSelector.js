@@ -6,7 +6,7 @@ import { useApi } from '../contexts/ApiContext';
 export const StoreSelector = () => {
   const { currentStore, setCurrentStore } = useCurrentStore();
   const { data: stores } = useQuery(useApi().api.getStores());
-  const options = [<option key={0} value={0}></option>];
+  const options = [];
 
   useEffect(() => {
     if (stores && !currentStore) {
@@ -15,6 +15,10 @@ export const StoreSelector = () => {
   }, [stores, currentStore, setCurrentStore]);
 
   if (!stores) return null;
+
+  if (stores.length === 0) {
+    options.push(<option key={0} value={0}></option>);
+  }
 
   stores.map((store) =>
     options.push(
