@@ -1,9 +1,15 @@
+import classNames from 'classnames';
+
 export const NeededItemsToggle = ({ neededItemsOnly, onToggle }) => {
   const buttonText = neededItemsOnly ? 'Show all' : 'Generate list';
-  const variant = neededItemsOnly ? 'secondary' : 'primary';
+
+  const className = classNames('needed-items-toggle', 'btn', {
+    'btn-primary': !neededItemsOnly,
+    'btn-info': neededItemsOnly,
+  });
 
   return (
-    <button className={`btn btn-${variant}`} onClick={onToggle}>
+    <button className={className} onClick={onToggle}>
       {buttonText}
     </button>
   );

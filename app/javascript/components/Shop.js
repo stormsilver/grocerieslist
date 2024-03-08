@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
-// import { AddButton } from './AddItemButton';
+import { PageHeader } from './PageHeader';
 import { StoreSelector } from './StoreSelector';
 import { ShopItems } from './shop/ShopItems';
 import { sortByName } from '../util';
@@ -135,30 +135,26 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
       onReordering={onReordering}
       onReordered={onReordered}
     >
-      <div className="shop-list-ordered">
-        <ShopItems
-          items={sortedItems['current-ordered']}
-          containerId="current-ordered"
-          neededItemsOnly={neededItemsOnly}
-        />
-      </div>
-      <div className="shop-list-unordered">
-        <div className="container-fluid d-flex justify-content-between">
-          <h6 className="display-6">Unordered</h6>
-          {/* <AddButton /> */}
-        </div>
-        <ShopItems
-          items={sortedItems['current-unordered']}
-          containerId="current-unordered"
-          neededItemsOnly={neededItemsOnly}
-        />
-      </div>
-      <div className="shop-other-stores">
-        <div className="container-fluid">
-          <h6 className="display-6">Not at this store</h6>
-        </div>
-        <ShopItems items={sortedItems['other-stores']} containerId="other-stores" neededItemsOnly={neededItemsOnly} />
-      </div>
+      <ShopItems
+        items={sortedItems['current-ordered']}
+        containerId="current-ordered"
+        neededItemsOnly={neededItemsOnly}
+        title="In order"
+      />
+
+      <ShopItems
+        items={sortedItems['current-unordered']}
+        containerId="current-unordered"
+        neededItemsOnly={neededItemsOnly}
+        title="Unordered"
+      />
+
+      <ShopItems
+        items={sortedItems['other-stores']}
+        containerId="other-stores"
+        neededItemsOnly={neededItemsOnly}
+        title="Not at this store"
+      />
     </SortableLists>
   );
 };
@@ -192,14 +188,14 @@ export const Shop = () => {
 
   return (
     <div className="shop-page">
-      <div className="shop-store-selector row g-2 container-fluid">
+      <PageHeader>
         <div className="col-8">
           <StoreSelector />
         </div>
-        <div className="col-4 text-end">
+        <div className="col-4">
           <NeededItemsToggle neededItemsOnly={neededItemsOnly} onToggle={onToggleNeededItems} />
         </div>
-      </div>
+      </PageHeader>
 
       {currentStore ? (
         <ShoppingList currentStore={currentStore} itemsByStore={itemsByStore} neededItemsOnly={neededItemsOnly} />

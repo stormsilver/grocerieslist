@@ -1,8 +1,9 @@
 import React from 'react';
+import classNames from 'classnames';
 import { CheckCircle } from './CheckCircle';
 import { useApi } from '../contexts/ApiContext';
 
-export const Item = React.forwardRef(({ item, children, ...props }, ref) => {
+export const Item = React.forwardRef(({ dragging = false, item, children, ...props }, ref) => {
   const { sync } = useApi();
   const [checked, setChecked] = React.useState(!item.needed);
   const [name, setName] = React.useState(item.name);
@@ -19,14 +20,18 @@ export const Item = React.forwardRef(({ item, children, ...props }, ref) => {
     sync();
   };
 
+  const className = classNames('item d-flex justify-content-between', { dragging });
+
   return (
-    <div className="d-flex justify-content-between" ref={ref} {...props}>
-      <div className="justify-content-start">
-        <CheckCircle id={`item-${item.id}`} checked={checked} onChange={onCheckUncheck} />
-        <input type="text" value={name} onChange={onItemNameChange} />
-        {/* (id: {item.id}, itemId: {item.itemId} order: {item.order}, store: {item.store?.id}, category: {item.categoryId}) */}
+    <div ref={ref} {...props}>
+      <div className={className}>
+        <div className="justify-content-start">
+          <CheckCircle id={`item-${item.id}`} checked={checked} onChange={onCheckUncheck} />
+          <input className="item-name" type="text" value={name} onChange={onItemNameChange} />
+          {/* (id: {item.id}, itemId: {item.itemId} order: {item.order}, store: {item.store?.id}, category: {item.categoryId}) */}
+        </div>
+        {children}
       </div>
-      {children}
     </div>
   );
 });

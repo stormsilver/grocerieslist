@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AddItemButton } from './AddItemButton';
+// import { AddItemButton } from './AddItemButton';
 import { Search } from './Search';
 import { Category } from './list/Category';
 import { Item } from './Item';
@@ -10,6 +10,7 @@ import { SortableList } from './SortableList';
 import { SortableItem } from './SortableItem';
 import { sortByName } from '../util';
 import { UNCATEGORIZED_CATEGORY_ID } from '../api/Api';
+import { PageHeader } from './PageHeader';
 
 const AllItemsList = ({ itemsByCategory, categories }) => {
   const { sync } = useApi();
@@ -103,10 +104,14 @@ export const List = () => {
 
   return (
     <div className="list-page">
-      <div className="list-searchbar d-flex container-fluid">
+      <PageHeader>
+        {/* <div className="col-10"> */}
         <Search onSearch={onSearch} searchTerm={searchTerm} />
-        <AddItemButton />
-      </div>
+        {/* </div>
+        <div className="col-2">
+          <AddItemButton />
+        </div> */}
+      </PageHeader>
 
       <AllItemsList categories={categories} itemsByCategory={filteredItemsByCategory} />
     </div>

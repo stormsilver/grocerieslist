@@ -12,7 +12,7 @@ export const SortableItem = ({ item }) => {
     transition,
   };
 
-  const className = classNames('item', { 'visually-hidden': item.hidden });
+  const className = classNames({ 'visually-hidden': item.hidden });
 
   return (
     <Item item={item} ref={setNodeRef} style={style} className={className}>

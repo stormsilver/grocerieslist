@@ -25,15 +25,12 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
   const DragOverlayItem = dragOverlayComponent;
 
   const handleDragStart = (event) => {
-    // console.log('drag start event: ', event);
     const { active } = event;
 
     setActiveItem(allItems.find((item) => item.id === active.id));
   };
 
   const handleDragOver = (event) => {
-    console.log('drag over event: ', event);
-
     const reorderProps = reorderPropsFromDragEvent(event, allItems);
 
     if (reorderProps.activeItem.id === reorderProps.overItem?.id) return;
@@ -42,8 +39,6 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
   };
 
   const handleDragEnd = (event) => {
-    // console.log('drag end event: ', event);
-
     setActiveItem(null);
 
     const reorderProps = reorderPropsFromDragEvent(event, allItems);
@@ -60,7 +55,7 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
       onDragEnd={handleDragEnd}
     >
       {children}
-      <DragOverlay>{activeItem ? <DragOverlayItem item={activeItem} /> : null}</DragOverlay>
+      <DragOverlay className="drag-overlay">{activeItem ? <DragOverlayItem item={activeItem} /> : null}</DragOverlay>
     </DndContext>
   );
 };

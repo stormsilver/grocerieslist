@@ -6,14 +6,12 @@ export const SortableList = ({ containerId, items, sortableItemComponent, needed
   const { setNodeRef } = useDroppable({ id: `empty-${containerId}`, data: { containerId } });
 
   return (
-    <div className="sortable-list">
-      <SortableContext id={containerId} items={items} strategy={verticalListSortingStrategy}>
-        <div ref={setNodeRef}>
-          {items.map((item) => (
-            <SortableItem key={item.itemId} item={item} neededItemsOnly={neededItemsOnly} />
-          ))}
-        </div>
-      </SortableContext>
-    </div>
+    <SortableContext id={containerId} items={items} strategy={verticalListSortingStrategy}>
+      <div ref={setNodeRef} className="sortable-list">
+        {items.map((item) => (
+          <SortableItem key={item.itemId} item={item} neededItemsOnly={neededItemsOnly} />
+        ))}
+      </div>
+    </SortableContext>
   );
 };

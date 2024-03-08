@@ -1,12 +1,12 @@
 import { AddItemButton } from '../AddItemButton';
+import { SectionHeader } from '../SectionHeader';
 
 export const Category = ({ category, children }) => {
   return (
     <div>
-      <div className="list-category d-flex justify-content-between container-fluid">
-        <h6 className="display-6">{category.name}</h6>
+      <SectionHeader title={category.name}>
         <AddItemButton category={category} />
-      </div>
+      </SectionHeader>
 
       <div className="container-fluid">{children}</div>
     </div>

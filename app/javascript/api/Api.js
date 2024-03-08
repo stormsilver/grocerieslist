@@ -47,18 +47,35 @@ export class Api {
   synchronize = async () => {
     console.log('API: synchronize');
 
+    const thingsToSync = [this.#items, this.#storeItems];
+    const savers = thingsToSync.map((thing) => () => (thing.isEmpty ? Promise.resolve() : thing.save()));
+
     if (DEBUG) {
-      await this.#items.save();
-      await this.#storeItems.save();
-      return Promise.resolve();
+      // save each thing in order
+      const saveNext = () => {
+        const nextSaver = savers.shift();
+        if (nextSaver) {
+          return nextSaver().then(saveNext);
+        }
+        return Promise.resolve();
+      };
+      return saveNext();
     }
-    return Promise.all([this.#items.save(), this.#storeItems.save()]);
+    return Promise.all(savers.map((saver) => saver()));
+
+    //
+    //     if (DEBUG) {
+    //       await this.#items.save();
+    //       await this.#storeItems.save();
+    //       return Promise.resolve();
+    //     }
+    //     return Promise.all([this.#items.save(), this.#storeItems.save()]);
   };
 
   save = async () => {
     console.log('API: save');
 
-    const thingsToSave = [this.#stores, this.#categories, this.#items];
+    const thingsToSave = [this.#stores, this.#categories];
     const savers = thingsToSave.map((thing) => () => (thing.isEmpty ? Promise.resolve() : thing.save()));
 
     if (DEBUG) {

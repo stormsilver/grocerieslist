@@ -47,6 +47,7 @@ export const ApiProvider = ({ children }) => {
   };
 
   const sync = useDebounceCallback(performSync, 2000);
+  const save = () => performSave().then(performSync);
 
-  return <ApiContext.Provider value={{ api, sync, syncState, save: performSave }}>{children}</ApiContext.Provider>;
+  return <ApiContext.Provider value={{ api, sync, syncState, save }}>{children}</ApiContext.Provider>;
 };

@@ -1,16 +1,14 @@
 # Demo to Joanna
-  * delete item
-    -- where do we even put this button?
-  * add category
-    -- where do we even put this button?
+  * dragging and scrolling is slow, should be fast???
 
 
 
 # We can use it here
   * add new store
-  * dragging and scrolling is slow, should be fast???
-  * shop tab should have sticky section headers
-  * a nice coat of paint
+  * delete item
+    -- where do we even put this button?
+  * add category
+    -- where do we even put this button?
 
 
 
@@ -22,12 +20,10 @@
   * auto switch to dark mode
   * rename store? (requires setup section)
   * dirty tracking on edited things
-  * style drag overlay better
-    - opaque background
-    - big drop shadow
   * remember which tab was last open and load it on refresh
     - remember which store was selected
   * authn/authz
+  * websockets/pusher for real-time updates
 
 
 # Offline First

@@ -7,10 +7,18 @@
   --groceries-searchbar-height: 2.55rem;
 }
 
+body {
+  --bs-btn-active-border-color: transparent;
+}
+
+label.btn {
+  padding: 0.25rem;
+}
+
 .navbar {
   position: fixed;
   width: 100%;
-  z-index: 1;
+  z-index: 2;
 }
 
 .navbar-nav {
@@ -25,36 +33,27 @@ main {
   padding-top: var(--groceries-navbar-height);
 }
 
-.item {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  margin-top: 0.5rem;
-}
+.page-header {
+  position: sticky;
+  top: var(--groceries-navbar-height);
+  background-color: var(--bs-tertiary-bg);
+  z-index: 2;
+  padding-bottom: 0.2rem;
 
-.list-page {
-  .list-searchbar {
-    position: sticky;
-    top: var(--groceries-navbar-height);
-    background-color: var(--bs-tertiary-bg);
-    z-index: 1;
-    padding-bottom: 0.2rem;
-  }
-
-  .list-category {
-    position: sticky;
-    top: calc(var(--groceries-navbar-height) + var(--groceries-searchbar-height));
-    background-color: var(--bs-secondary-bg);
+  .row {
+    --bs-gutter-x: 0;
   }
 }
 
-.shop-page {
-  .shop-store-selector {
-    position: sticky;
-    top: var(--groceries-navbar-height);
-    background-color: var(--bs-tertiary-bg);
-    z-index: 1;
-    padding-bottom: 0.2rem;
+.section-header {
+  position: sticky;
+  top: calc(var(--groceries-navbar-height) + var(--groceries-searchbar-height));
+  background-color: var(--bs-secondary-bg);
+  z-index: 1;
+
+  h6 {
+    margin: 0.25rem 0;
+    font-size: 1.5rem;
   }
 }
 
@@ -65,17 +64,50 @@ main {
   right: 0.25rem;
 }
 
-.drag-handle {
-  touch-action: none;
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  .drag-handle {
+    touch-action: none;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .bi::before {
+    position: relative;
+    top: -1px;
+  }
+
+  .item-name {
+    border: none;
+  }
+}
+
+.drag-overlay {
+  box-shadow: 0 1rem 1rem 0 rgba(0, 0, 0, 0.25);
+  background-color: var(--bs-body-bg);
 }
 
 .empty-drop-zone {
   min-height: 3rem;
   &.drag-over {
-    background-color: var(--bs-secondary-bg);
+    background-color: white;
   }
 }
 
 .sortable-list {
-  margin-bottom: 1.5rem;
+  margin: 0.5rem 0;
+}
+
+.sortable-list:empty {
+  margin-bottom: 2.5rem;
+}
+
+.shop-page {
+  .needed-items-toggle {
+    margin-left: 0.25rem;
+    width: 100%;
+  }
 }
