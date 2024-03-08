@@ -1,3 +1,19 @@
+/* eslint-disable max-classes-per-file */
+export class SaveError extends Error {
+  response;
+
+  status;
+
+  details;
+
+  constructor(kind, response, details = {}) {
+    super(`Failed to save ${kind}`);
+    this.response = response;
+    this.status = response.status;
+    this.details = details;
+  }
+}
+
 export class BagOfHolding {
   apiPath;
 
@@ -11,14 +27,17 @@ export class BagOfHolding {
 
   #beforeInstantiation;
 
+  #beforeSave;
+
   #afterFetch;
 
-  constructor({ apiPath, key, klass, beforeInstantiation = null, afterFetch = null }) {
+  constructor({ apiPath, key, klass, beforeInstantiation = null, beforeSave = null, afterFetch = null }) {
     this.apiPath = apiPath;
     this.klass = klass;
     this.key = key;
     this.#storage = {};
     this.#beforeInstantiation = beforeInstantiation;
+    this.#beforeSave = beforeSave;
     this.#afterFetch = afterFetch;
 
     this.#reset();
@@ -63,15 +82,26 @@ export class BagOfHolding {
   }
 
   async save() {
-    const body = this.#newInstances.concat(Object.values(this.#storage)).map((instance) => instance.toApi());
-    await fetch(this.apiPath, {
+    let instances = this.#newInstances.concat(Object.values(this.#storage));
+    if (this.#beforeSave) {
+      instances = this.#beforeSave(instances);
+    }
+
+    const payload = instances.map((instance) => instance.toApi());
+    const response = await fetch(this.apiPath, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ [this.key]: body }),
+      body: JSON.stringify({ [this.key]: payload }),
     });
-    this.#reset();
+
+    if (response.ok) {
+      this.#reset();
+    } else {
+      const body = await response.json();
+      throw new SaveError(this.key, response, body);
+    }
   }
 
   #reset() {

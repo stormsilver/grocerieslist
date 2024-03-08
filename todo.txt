@@ -1,8 +1,8 @@
 # Demo to Joanna
-
-  * add new item
   * delete item
+    -- where do we even put this button?
   * add category
+    -- where do we even put this button?
 
 
 
@@ -10,12 +10,12 @@
   * add new store
   * dragging and scrolling is slow, should be fast???
   * shop tab should have sticky section headers
+  * a nice coat of paint
 
 
 
 
 # Other stuff
-  * a nice coat of paint
   * delete store
   * delete category
   * collapsible sections

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { arrayMove } from '@dnd-kit/sortable';
-import { AddButton } from './AddButton';
+// import { AddButton } from './AddItemButton';
 import { StoreSelector } from './StoreSelector';
 import { ShopItems } from './shop/ShopItems';
 import { sortByName } from '../util';
@@ -145,7 +145,7 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
       <div className="shop-list-unordered">
         <div className="container-fluid d-flex justify-content-between">
           <h6 className="display-6">Unordered</h6>
-          <AddButton />
+          {/* <AddButton /> */}
         </div>
         <ShopItems
           items={sortedItems['current-unordered']}

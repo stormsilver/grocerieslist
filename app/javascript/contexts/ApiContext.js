@@ -12,9 +12,9 @@ export const ApiProvider = ({ children }) => {
   const queryClient = useQueryClient();
   const {
     mutateAsync: performSync,
-    isPending,
-    isError,
-    isSuccess,
+    isPending: isSyncPending,
+    isError: isSyncError,
+    isSuccess: isSyncSuccess,
   } = useMutation({
     mutationFn: api.synchronize,
     onSuccess: () => {
@@ -24,20 +24,29 @@ export const ApiProvider = ({ children }) => {
     },
   });
 
-  // const synchronize = async () => {
-  //   setSyncState((state) => ({ ...state, isSyncing: true }));
-  //   return performSync().then((response) => {
-  //     setSyncState((state) => ({ ...state, isSyncing: false, lastSynced: new Date() }));
-  //   });
-  // };
+  const {
+    mutateAsync: performSave,
+    isPending: isSavePending,
+    isError: isSaveError,
+    isSuccess: isSaveSuccess,
+  } = useMutation({
+    mutationFn: api.save,
+    onSuccess: () => {
+      console.log('  Saved!');
+      queryClient.invalidateQueries({ queryKey: api.getStores().queryKey });
+      queryClient.invalidateQueries({ queryKey: api.getCategories().queryKey });
+      queryClient.invalidateQueries({ queryKey: api.getItemsByCategory().queryKey });
+      queryClient.invalidateQueries({ queryKey: api.getItemsByStore().queryKey });
+    },
+  });
 
   const syncState = {
-    isSyncing: isPending,
-    isError,
-    isSuccess,
+    isSyncing: isSyncPending || isSavePending,
+    isError: isSyncError || isSaveError,
+    isSuccess: isSyncSuccess || isSaveSuccess,
   };
 
   const sync = useDebounceCallback(performSync, 2000);
 
-  return <ApiContext.Provider value={{ api, sync, syncState }}>{children}</ApiContext.Provider>;
+  return <ApiContext.Provider value={{ api, sync, syncState, save: performSave }}>{children}</ApiContext.Provider>;
 };

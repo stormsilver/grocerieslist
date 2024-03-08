@@ -10,6 +10,8 @@ class ItemsController < ApplicationController
   # PATCH/PUT /items
   # PATCH/PUT /items.json
   def update_bulk
+    Rails.logger.ap item_params_for_bulk_update
+
     # split out any that are new
     existing_items, new_items = item_params_for_bulk_update.partition { |item| item[:id] }
 
@@ -20,7 +22,7 @@ class ItemsController < ApplicationController
     items_to_update = items_to_update.index_by { |item| item[:id] }
 
     ActiveRecord::Base.transaction do
-      Item.create!(new_items)
+      Item.create!(allow_create_values(new_items))
       Item.destroy(items_to_destroy.map { |item| item[:id] })
       Item.update!(items_to_update.keys, allow_update_values(items_to_update.values))
     end
@@ -42,6 +44,17 @@ class ItemsController < ApplicationController
   def allow_update_values(values)
     values.map do |value|
       value.slice(:name, :needed, :category_id)
+    end
+  end
+
+  def allow_create_values(new_items)
+    new_items.map do |new_item|
+      {
+        name: new_item[:name],
+        needed: new_item[:needed],
+        category_id: new_item[:category_id],
+        account_id: Current.account.id
+      }
     end
   end
 end

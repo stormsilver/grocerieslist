@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { AddButton } from './AddButton';
+import { AddItemButton } from './AddItemButton';
 import { Search } from './Search';
 import { Category } from './list/Category';
 import { Item } from './Item';
@@ -105,7 +105,7 @@ export const List = () => {
     <div className="list-page">
       <div className="list-searchbar d-flex container-fluid">
         <Search onSearch={onSearch} searchTerm={searchTerm} />
-        <AddButton />
+        <AddItemButton />
       </div>
 
       <AllItemsList categories={categories} itemsByCategory={filteredItemsByCategory} />

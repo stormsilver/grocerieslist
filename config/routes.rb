@@ -1,16 +1,24 @@
 Rails.application.routes.draw do
   scope :api do
-    resources :stores
-
-    resources :categories
-
-    resources :store_items do
+    resources :stores, only: [:index] do
       collection do
         patch '/', action: :update_bulk
       end
     end
 
-    resources :items do
+    resources :categories, only: [:index] do
+      collection do
+        patch '/', action: :update_bulk
+      end
+    end
+
+    resources :store_items, only: [:index] do
+      collection do
+        patch '/', action: :update_bulk
+      end
+    end
+
+    resources :items, only: [:index] do
       collection do
         patch '/', action: :update_bulk
       end

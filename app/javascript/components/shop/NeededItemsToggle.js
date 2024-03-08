@@ -1,5 +1,5 @@
 export const NeededItemsToggle = ({ neededItemsOnly, onToggle }) => {
-  const buttonText = neededItemsOnly ? 'Show all items' : 'Generate list';
+  const buttonText = neededItemsOnly ? 'Show all' : 'Generate list';
   const variant = neededItemsOnly ? 'secondary' : 'primary';
 
   return (

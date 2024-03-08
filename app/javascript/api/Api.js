@@ -12,6 +12,10 @@ export class Api {
     apiPath: '/api/categories',
     key: 'categories',
     klass: Category,
+    beforeSave: (categories) => {
+      // Remove the "Uncategorized" category
+      return categories.filter((c) => c.id !== UNCATEGORIZED_CATEGORY_ID);
+    },
     afterFetch: (categories) => {
       // Add an "Uncategorized" category
       categories.push({ id: UNCATEGORIZED_CATEGORY_ID, name: 'Uncategorized' });
@@ -44,13 +48,31 @@ export class Api {
     console.log('API: synchronize');
 
     if (DEBUG) {
-      await this.#categories.save();
-      await this.#stores.save();
       await this.#items.save();
       await this.#storeItems.save();
       return Promise.resolve();
     }
-    return Promise.all([this.#categories.save(), this.#stores.save(), this.#items.save(), this.#storeItems.save()]);
+    return Promise.all([this.#items.save(), this.#storeItems.save()]);
+  };
+
+  save = async () => {
+    console.log('API: save');
+
+    const thingsToSave = [this.#stores, this.#categories, this.#items];
+    const savers = thingsToSave.map((thing) => () => (thing.isEmpty ? Promise.resolve() : thing.save()));
+
+    if (DEBUG) {
+      // save each thing in order
+      const saveNext = () => {
+        const nextSaver = savers.shift();
+        if (nextSaver) {
+          return nextSaver().then(saveNext);
+        }
+        return Promise.resolve();
+      };
+      return saveNext();
+    }
+    return Promise.all(savers.map((saver) => saver()));
   };
 
   getItemsByCategory = () => {
@@ -104,6 +126,12 @@ export class Api {
     console.log('API: createStoreItem');
 
     this.#storeItems.createOne(storeItem);
+  };
+
+  createItem = (item) => {
+    console.log('API: createItem');
+
+    this.#items.createOne(item);
   };
 
   getStores = () => {
