@@ -27,6 +27,11 @@ label.btn {
 
 .nav-item {
   width: 100%;
+
+  .nav-link.active {
+    // color: var(--bs-info);
+    font-weight: bold;
+  }
 }
 
 main {

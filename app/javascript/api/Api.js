@@ -62,14 +62,6 @@ export class Api {
       return saveNext();
     }
     return Promise.all(savers.map((saver) => saver()));
-
-    //
-    //     if (DEBUG) {
-    //       await this.#items.save();
-    //       await this.#storeItems.save();
-    //       return Promise.resolve();
-    //     }
-    //     return Promise.all([this.#items.save(), this.#storeItems.save()]);
   };
 
   save = async () => {
@@ -149,6 +141,12 @@ export class Api {
     console.log('API: createItem');
 
     this.#items.createOne(item);
+  };
+
+  createCategory = (category) => {
+    console.log('API: createCategory');
+
+    this.#categories.createOne(category);
   };
 
   getStores = () => {

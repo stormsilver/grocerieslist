@@ -11,6 +11,7 @@ import { SortableItem } from './SortableItem';
 import { sortByName } from '../util';
 import { UNCATEGORIZED_CATEGORY_ID } from '../api/Api';
 import { PageHeader } from './PageHeader';
+import { AddCategoryButton } from './AddCategoryButton';
 
 const AllItemsList = ({ itemsByCategory, categories }) => {
   const { sync } = useApi();
@@ -105,12 +106,12 @@ export const List = () => {
   return (
     <div className="list-page">
       <PageHeader>
-        {/* <div className="col-10"> */}
-        <Search onSearch={onSearch} searchTerm={searchTerm} />
-        {/* </div>
-        <div className="col-2">
-          <AddItemButton />
-        </div> */}
+        <div className="col-11">
+          <Search onSearch={onSearch} searchTerm={searchTerm} />
+        </div>
+        <div className="col-1">
+          <AddCategoryButton />
+        </div>
       </PageHeader>
 
       <AllItemsList categories={categories} itemsByCategory={filteredItemsByCategory} />
