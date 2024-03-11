@@ -5,7 +5,7 @@ import { Category } from '../models/Category';
 import { BagOfHolding } from './BagOfHolding';
 
 export const UNCATEGORIZED_CATEGORY_ID = -1;
-const DEBUG = true;
+const DEBUG = process.env.NODE_ENV !== 'production';
 
 export class Api {
   #categories = new BagOfHolding({
