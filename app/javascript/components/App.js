@@ -33,6 +33,7 @@ export const App = () => {
           <CurrentStoreProvider>
             <Layout>
               <Routes>
+                <Route path="/" element={<List />} />
                 <Route path="/list" element={<List />} />
                 <Route path="/shop" element={<Shop />} />
               </Routes>

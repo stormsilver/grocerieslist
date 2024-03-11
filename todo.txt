@@ -1,10 +1,5 @@
 # Demo to Joanna
-  * dragging and scrolling is slow, should be fast???
   * add category
-    -- where do we even put this button?
-  * debug config for production
-    - turn off debug in API
-    - hide react-query tools in production
 
 
 

@@ -35,7 +35,7 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
   }, [itemsByStore]);
 
   useEffect(() => {
-    console.log('recomputing Shop sortedItems');
+    // console.log('recomputing Shop sortedItems');
     const currentStoreItems = itemsByStore[currentStore.id];
     const otherStoreItems = Object.entries(itemsByStore).flatMap(([storeId, storeItems]) =>
       storeId === currentStore.id ? [] : storeItems
@@ -116,7 +116,7 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
   };
 
   const onReordered = (d) => {
-    console.log('onReordered: ', d);
+    // console.log('onReordered: ', d);
     const { activeItem } = d;
 
     if (activeItem.isMarkedForNew) {
@@ -167,27 +167,36 @@ export const Shop = () => {
   const { currentStore } = useCurrentStore();
   const [neededItemsOnly, setNeededItemsOnly] = useState(false);
   const { data: itemsByStore } = useQuery(useApi().api.getItemsByStore());
+  const [renderHack, setRenderHack] = useState(0);
+  const [hiddenItemIds, setHiddenItemIds] = useState([]);
+
+  useEffect(() => {
+    if (!itemsByStore) return;
+
+    Object.entries(itemsByStore).forEach(([_storeId, storeItems]) => {
+      storeItems.forEach((item) => {
+        item.hidden = hiddenItemIds.includes(item.id);
+      });
+    });
+    setRenderHack((prev) => prev + 1);
+  }, [itemsByStore, hiddenItemIds]);
 
   if (!itemsByStore) {
     return null;
   }
 
   const onToggleNeededItems = () => {
-    setNeededItemsOnly((prevNeededItemsOnly) => {
-      const newNeededItemsOnly = !prevNeededItemsOnly;
-
-      Object.entries(itemsByStore).forEach(([_storeId, storeItems]) => {
-        storeItems.forEach((item) => {
-          item.hidden = newNeededItemsOnly && !item.needed;
-        });
-      });
-
-      return newNeededItemsOnly;
-    });
+    const newNeededItemsOnly = !neededItemsOnly;
+    setNeededItemsOnly(newNeededItemsOnly);
+    setHiddenItemIds(
+      Object.entries(itemsByStore).flatMap(([_storeId, storeItems]) =>
+        storeItems.filter((item) => newNeededItemsOnly && !item.needed).map((item) => item.id)
+      )
+    );
   };
 
   return (
-    <div className="shop-page">
+    <div className="shop-page" foo={renderHack}>
       <PageHeader>
         <div className="col-8">
           <StoreSelector />

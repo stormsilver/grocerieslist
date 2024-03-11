@@ -33,6 +33,10 @@ main {
   padding-top: var(--groceries-navbar-height);
 }
 
+.shop-page {
+  // overflow-y: auto;
+}
+
 .page-header {
   position: sticky;
   top: var(--groceries-navbar-height);

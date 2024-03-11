@@ -21,7 +21,7 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
   const allItems = useMemo(() => Object.values(itemsByCategory).flat(), [itemsByCategory]);
 
   useEffect(() => {
-    console.log('recomputing List sortedItems');
+    // console.log('recomputing List sortedItems');
     // then sort the items in each category by name
     const newSortedItems = {};
     sortedCategoryIds.forEach((categoryId) => {
@@ -45,8 +45,8 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
     setSortedItems({ ...sortedItems, [activeContainerId]: newActiveItems, [overContainerId]: newOverItems });
   };
 
-  const onReordered = (d) => {
-    console.log('onReordered: ', d);
+  const onReordered = () => {
+    // console.log('onReordered: ', d);
     sync();
   };
 
@@ -98,7 +98,7 @@ export const List = () => {
   if (!itemsByCategory || !categories) return null;
 
   const onSearch = (newSearchTerm) => {
-    console.log('searching for: ', newSearchTerm);
+    // console.log('searching for: ', newSearchTerm);
     setSearchTerm(newSearchTerm);
   };
 
