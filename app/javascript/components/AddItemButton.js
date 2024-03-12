@@ -51,10 +51,12 @@ export const AddItemButton = ({ category }) => {
 
     console.error('Error saving item', error);
 
+    const errorText = error.details?.errors?.join(', ') || error.message;
+
     return (
       <Alert variant="danger">
         <Alert.Heading>Error saving</Alert.Heading>
-        {JSON.stringify(error)}
+        {errorText}
       </Alert>
     );
   };

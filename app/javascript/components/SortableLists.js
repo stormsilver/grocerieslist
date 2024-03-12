@@ -139,7 +139,7 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
           strategy: MeasuringStrategy.Always,
         },
       }}
-      collisionDetection={collisionDetectionStrategy}
+      collisionDetection={closestCenter}
       modifiers={[restrictToVerticalAxis]}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
