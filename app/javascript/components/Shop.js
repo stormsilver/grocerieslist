@@ -36,7 +36,7 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
 
   useEffect(() => {
     // console.log('recomputing Shop sortedItems');
-    const currentStoreItems = itemsByStore[currentStore.id];
+    const currentStoreItems = itemsByStore[currentStore.id] || [];
     const otherStoreItems = Object.entries(itemsByStore).flatMap(([storeId, storeItems]) =>
       storeId === currentStore.id ? [] : storeItems
     );
