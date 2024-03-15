@@ -6,14 +6,12 @@ import { Category } from './list/Category';
 import { Item } from './Item';
 import { useApi } from '../contexts/ApiContext';
 import { SortableLists } from './SortableLists';
-import { SortableList } from './SortableList';
-import { SortableItem } from './SortableItem';
 import { sortByName } from '../util';
 import { UNCATEGORIZED_CATEGORY_ID } from '../api/Api';
 import { PageHeader } from './PageHeader';
 import { AddCategoryButton } from './AddCategoryButton';
 
-const AllItemsList = ({ itemsByCategory, categories }) => {
+const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCollapsedCategories }) => {
   const { sync } = useApi();
   const [sortedItems, setSortedItems] = useState({});
 
@@ -46,18 +44,32 @@ const AllItemsList = ({ itemsByCategory, categories }) => {
     setSortedItems({ ...sortedItems, [activeContainerId]: newActiveItems, [overContainerId]: newOverItems });
   };
 
-  const onReordered = () => {
+  const onReordered = (d) => {
     // console.log('onReordered: ', d);
+    setCollapsedCategories((prev) => {
+      const newCollapsedCategories = { ...prev };
+      delete newCollapsedCategories[d.overContainerId];
+      return newCollapsedCategories;
+    });
+
     sync();
+  };
+
+  const onToggleCollapse = (categoryId) => {
+    setCollapsedCategories({ ...collapsedCategories, [categoryId]: !collapsedCategories[categoryId] });
   };
 
   const categorySections = sortedCategoryIds.map((categoryId, i) => {
     const category = categories.find((c) => c.id === categoryId);
     const items = sortedItems[categoryId] || [];
     return (
-      <Category key={i} category={category}>
-        <SortableList containerId={category.id} items={items} sortableItemComponent={SortableItem} />
-      </Category>
+      <Category
+        key={i}
+        category={category}
+        items={items}
+        collapsed={collapsedCategories[category.id]}
+        onToggleCollapse={onToggleCollapse}
+      />
     );
   });
 
@@ -79,6 +91,7 @@ export const List = () => {
   const { api } = useApi();
   const { data: categories } = useQuery(api.getCategories());
   const { data: itemsByCategory } = useQuery(api.getItemsByCategory());
+  const [collapsedCategories, setCollapsedCategories] = useState({});
 
   useEffect(() => {
     if (!itemsByCategory) return;
@@ -96,11 +109,24 @@ export const List = () => {
     setFilteredItemsByCategory(Object.fromEntries(filteredEntries));
   }, [itemsByCategory, searchTerm]);
 
+  useEffect(() => {
+    if (!categories) return;
+
+    setCollapsedCategories((prev) => {
+      const allCollapsed = Object.fromEntries((categories || []).map((c) => [c.id, true]));
+      return { ...allCollapsed, ...prev };
+    });
+  }, [categories]);
+
   if (!itemsByCategory || !categories) return null;
 
   const onSearch = (newSearchTerm) => {
     // console.log('searching for: ', newSearchTerm);
     setSearchTerm(newSearchTerm);
+  };
+
+  const expandAllCategories = () => {
+    setCollapsedCategories({});
   };
 
   return (
@@ -110,11 +136,19 @@ export const List = () => {
           <Search onSearch={onSearch} searchTerm={searchTerm} />
         </div>
         <div className="col-1">
+          {/* <button type="button" className="btn" onClick={expandAllCategories}>
+            <i className="bi bi-chevron-bar-down"></i>
+          </button> */}
           <AddCategoryButton />
         </div>
       </PageHeader>
 
-      <AllItemsList categories={categories} itemsByCategory={filteredItemsByCategory} />
+      <AllItemsList
+        categories={categories}
+        itemsByCategory={filteredItemsByCategory}
+        collapsedCategories={collapsedCategories}
+        setCollapsedCategories={setCollapsedCategories}
+      />
     </div>
   );
 };

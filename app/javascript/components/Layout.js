@@ -31,12 +31,12 @@ export const Layout = ({ children }) => {
           <ul className="navbar-nav text-center d-flex justify-content-center">
             <li className="nav-item">
               <NavLink to="/list" className="nav-link">
-                List
+                Products
               </NavLink>
             </li>
             <li className="nav-item">
               <NavLink to="/shop" className="nav-link">
-                Shop
+                List
               </NavLink>
             </li>
             {/* <li className="nav-item">

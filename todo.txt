@@ -2,6 +2,7 @@
   * add new store
   * delete item
     -- where do we even put this button?
+  * when adding a new item, add a StoreItem for every store with no order
 
 
 
@@ -9,7 +10,7 @@
 # Other stuff
   * delete store
   * delete category
-  * collapsible sections
+  * collapse all sections / uncollapse all sections
   * auto switch to dark mode
   * rename store? (requires setup section)
   * dirty tracking on edited things

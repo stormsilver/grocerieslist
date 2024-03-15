@@ -6,11 +6,11 @@ export const CheckCircle = ({ id, checked, onChange }) => {
     className += ' bi-circle';
   }
   return (
-    <>
+    <span className="check-circle">
       <input type="checkbox" className="btn-check" id={id} checked={checked} onChange={onChange} />
       <label className="btn" htmlFor={id}>
         <i className={className}></i>
       </label>
-    </>
+    </span>
   );
 };

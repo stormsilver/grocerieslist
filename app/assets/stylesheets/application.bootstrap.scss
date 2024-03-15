@@ -60,9 +60,16 @@ main {
   background-color: var(--bs-secondary-bg);
   z-index: 1;
 
+  .collapse-button {
+    padding-top: 0;
+    padding-left: 0.25rem;
+    font-weight: bold;
+  }
+
   h6 {
     margin: 0.25rem 0;
     font-size: 1.5rem;
+    display: inline-block;
   }
 }
 
@@ -82,6 +89,13 @@ main {
     touch-action: none;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+  }
+
+  .check-circle {
+    margin-right: 0.75rem;
+    label {
+      font-size: 1.25rem;
+    }
   }
 
   .bi::before {
@@ -110,8 +124,9 @@ main {
   margin: 0.5rem 0;
 }
 
-.sortable-list:empty {
-  margin-bottom: 2.5rem;
+.sortable-list:empty,
+.collapsed-list {
+  margin-bottom: 1rem;
 }
 
 .shop-page {
