@@ -1,8 +1,13 @@
-# We can use it here
-  * add new store
-  * delete item
-    -- where do we even put this button?
-  * when adding a new item, add a StoreItem for every store with no order
+* when adding a new item, add a StoreItem for every store and place it at the top of the order
+* expand all / collapse all button on Products tab
+* allow clicking on the entire category to expand/collapse, not just the arrow
+* searching in Products tab should show matches in all categories, expanding categories as needed, hiding categories that don't have matches
+* add new store
+* delete item
+  -- where do we even put this button?
+* collapse "not at this store" by default
+* sort list of stores in store chooser dropdown
+* shorten debounce time for save
 
 
 
@@ -10,7 +15,6 @@
 # Other stuff
   * delete store
   * delete category
-  * collapse all sections / uncollapse all sections
   * auto switch to dark mode
   * rename store? (requires setup section)
   * dirty tracking on edited things
@@ -18,7 +22,9 @@
     - remember which store was selected
   * authn/authz
   * websockets/pusher for real-time updates
+    - or some other thing to keep multiple clients in sync
   * focus modal text input on open
+  * opens multiple tabs sometimes when launching from the app icon
 
 
 # Offline First
