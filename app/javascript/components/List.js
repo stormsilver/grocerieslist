@@ -16,7 +16,10 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
   const [sortedItems, setSortedItems] = useState({});
 
   // sort categories by name
-  const sortedCategoryIds = useMemo(() => categories.sort(sortByName).map((category) => category.id), [categories]);
+  const sortedCategoryIds = useMemo(
+    () => [...categories].sort(sortByName).map((category) => category.id),
+    [categories]
+  );
   const allItems = useMemo(() => Object.values(itemsByCategory).flat(), [itemsByCategory]);
 
   useEffect(() => {
@@ -59,12 +62,12 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
     setCollapsedCategories({ ...collapsedCategories, [categoryId]: !collapsedCategories[categoryId] });
   };
 
-  const categorySections = sortedCategoryIds.map((categoryId, i) => {
+  const categorySections = sortedCategoryIds.map((categoryId) => {
     const category = categories.find((c) => c.id === categoryId);
     const items = sortedItems[categoryId] || [];
     return (
       <Category
-        key={i}
+        key={categoryId}
         category={category}
         items={items}
         collapsed={collapsedCategories[category.id]}

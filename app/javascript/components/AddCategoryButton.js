@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import Form from 'react-bootstrap/Form';
 import Alert from 'react-bootstrap/Alert';
 import { useApi } from '../contexts/ApiContext';
-import { Item } from '../models/Item';
+import { Category } from '../models/Category';
 
 export const CategorySelector = ({ category, onSelect }) => {
   const { api } = useApi();
@@ -41,7 +41,7 @@ export const AddCategoryButton = () => {
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
   const handleSave = () => {
-    api.createCategory(new Item({ name: categoryName }));
+    api.createCategory(new Category({ name: categoryName }));
     save().then(handleClose).catch(setError);
   };
 

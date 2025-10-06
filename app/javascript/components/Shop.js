@@ -196,7 +196,8 @@ export const Shop = () => {
   };
 
   return (
-    <div className="shop-page" foo={renderHack}>
+    // Use key to trigger re-render instead of unsupported DOM attribute
+    <div className="shop-page" key={renderHack}>
       <PageHeader>
         <div className="col-8">
           <StoreSelector />
