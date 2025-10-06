@@ -31,7 +31,14 @@ const reorderPropsFromDragEvent = (event, allItems) => {
   };
 };
 
-export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, onReordered, children }) => {
+export const SortableLists = ({
+  dragOverlayComponent,
+  allItems,
+  itemsByContainer = {},
+  onReordering,
+  onReordered,
+  children,
+}) => {
   const [activeItem, setActiveItem] = useState(null);
   const lastOverId = useRef(null);
   const recentlyMovedToNewContainer = useRef(false);
@@ -67,57 +74,48 @@ export const SortableLists = ({ dragOverlayComponent, allItems, onReordering, on
 
   const collisionDetectionStrategy = useCallback(
     (args) => {
-      // console.log('collisionDetectionStrategy', args);
-      const activeId = activeItem.id;
-      if (activeId && activeId in allItems) {
-        return closestCenter({
-          ...args,
-          droppableContainers: args.droppableContainers.filter((container) => container.id in allItems),
-        });
-      }
+      const activeId = args?.active?.id ?? activeItem?.id;
+      const droppableContainersArray = args.droppableContainers.filter
+        ? args.droppableContainers
+        : Array.from(args.droppableContainers?.values?.() ?? []);
 
-      // Start by finding any intersecting droppable
       const pointerIntersections = pointerWithin(args);
-      const intersections =
-        pointerIntersections.length > 0
-          ? // If there are droppables intersecting with the pointer, return those
-            pointerIntersections
-          : rectIntersection(args);
+      const intersections = pointerIntersections.length > 0 ? pointerIntersections : rectIntersection(args);
       let overId = getFirstCollision(intersections, 'id');
 
       if (overId != null) {
-        if (overId in allItems) {
-          const containerItems = allItems[overId];
+        const overContainer = droppableContainersArray.find((container) => container.id === overId);
+        const overData = overContainer?.data?.current;
 
-          // If a container is matched and it contains items (columns 'A', 'B', 'C')
-          if (containerItems.length > 0) {
-            // Return the closest droppable within that container
-            overId = closestCenter({
+        if (overData && overData.containerId && !overData.sortable) {
+          const { containerId } = overData;
+          const containerItemIds = itemsByContainer[containerId] ?? [];
+
+          if (containerItemIds.length > 0) {
+            const closestChild = closestCenter({
               ...args,
-              droppableContainers: args.droppableContainers.filter(
-                (container) => container.id !== overId && containerItems.includes(container.id)
+              droppableContainers: droppableContainersArray.filter((container) =>
+                containerItemIds.includes(container.id)
               ),
-            })[0]?.id;
+            });
+            const [firstChildCollision] = closestChild;
+            overId = firstChildCollision?.id ?? overId;
           }
         }
 
-        lastOverId.current = overId;
-
-        return [{ id: overId }];
+        if (overId != null) {
+          lastOverId.current = overId;
+          return [{ id: overId }];
+        }
       }
 
-      // When a draggable item moves to a new container, the layout may shift
-      // and the `overId` may become `null`. We manually set the cached `lastOverId`
-      // to the id of the draggable item that was moved to the new container, otherwise
-      // the previous `overId` will be returned which can cause items to incorrectly shift positions
-      if (recentlyMovedToNewContainer.current) {
+      if (recentlyMovedToNewContainer.current && activeId != null) {
         lastOverId.current = activeId;
       }
 
-      // If no droppable is matched, return the last match
       return lastOverId.current ? [{ id: lastOverId.current }] : [];
     },
-    [activeItem, allItems]
+    [activeItem, itemsByContainer]
   );
 
   useEffect(() => {

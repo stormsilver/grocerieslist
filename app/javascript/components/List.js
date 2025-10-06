@@ -62,6 +62,14 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
     setCollapsedCategories({ ...collapsedCategories, [categoryId]: !collapsedCategories[categoryId] });
   };
 
+  const itemIdsByContainer = useMemo(
+    () =>
+      Object.fromEntries(
+        sortedCategoryIds.map((categoryId) => [categoryId, (sortedItems[categoryId] || []).map((item) => item.id)])
+      ),
+    [sortedCategoryIds, sortedItems]
+  );
+
   const categorySections = sortedCategoryIds.map((categoryId) => {
     const category = categories.find((c) => c.id === categoryId);
     const items = sortedItems[categoryId] || [];
@@ -80,6 +88,7 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
     <SortableLists
       dragOverlayComponent={Item}
       allItems={allItems}
+      itemsByContainer={itemIdsByContainer}
       onReordering={onReordering}
       onReordered={onReordered}
     >
@@ -126,10 +135,6 @@ export const List = () => {
   const onSearch = (newSearchTerm) => {
     // console.log('searching for: ', newSearchTerm);
     setSearchTerm(newSearchTerm);
-  };
-
-  const expandAllCategories = () => {
-    setCollapsedCategories({});
   };
 
   return (

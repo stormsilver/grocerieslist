@@ -58,6 +58,14 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
     });
   }, [currentStore.id, itemsByStore]);
 
+  const itemIdsByContainer = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(sortedItems).map(([containerId, items]) => [containerId, items.map((item) => item.id)])
+      ),
+    [sortedItems]
+  );
+
   const onReordering = (d) => {
     // console.log('onReordering: ', d);
     const isMovingToNewContainer = d.activeContainerId !== d.overContainerId;
@@ -132,6 +140,7 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
     <SortableLists
       dragOverlayComponent={Item}
       allItems={allItems}
+      itemsByContainer={itemIdsByContainer}
       onReordering={onReordering}
       onReordered={onReordered}
     >
