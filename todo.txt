@@ -1,6 +1,4 @@
 * In the Products tab:
-  * when dragging items, dragging an item onto a collapsed category should highlight the category to show that the item will be placed there. it should not expand the category
-  * add a button to expand all / collapse all categories
   * searching should show matches in all categories, expanding categories as needed, hiding categories that don't have matches
 * In the List tab:
   * collapse "not at this store" by default

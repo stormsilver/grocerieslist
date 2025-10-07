@@ -136,16 +136,33 @@ export const List = () => {
     setSearchTerm(newSearchTerm);
   };
 
+  const anyCollapsed = categories.some((category) => collapsedCategories[category.id]);
+  const targetCollapsedValue = !anyCollapsed;
+
+  const toggleAllCategories = () => {
+    const nextCollapsedState = Object.fromEntries(categories.map((category) => [category.id, targetCollapsedValue]));
+    setCollapsedCategories(nextCollapsedState);
+  };
+
+  const toggleAllIcon = anyCollapsed ? 'bi-arrows-expand' : 'bi-arrows-collapse';
+  const toggleAllLabel = anyCollapsed ? 'Expand all categories' : 'Collapse all categories';
+
   return (
     <div className="list-page">
       <PageHeader>
-        <div className="col-11">
+        <div className="col-10">
           <Search onSearch={onSearch} searchTerm={searchTerm} />
         </div>
-        <div className="col-1">
-          {/* <button type="button" className="btn" onClick={expandAllCategories}>
-            <i className="bi bi-chevron-bar-down"></i>
-          </button> */}
+        <div className="col-2 justify-content-end d-flex gap-2 align-items-center">
+          <button
+            type="button"
+            className="btn"
+            onClick={toggleAllCategories}
+            aria-label={toggleAllLabel}
+            title={toggleAllLabel}
+          >
+            <i className={`bi ${toggleAllIcon}`} aria-hidden="true"></i>
+          </button>
           <AddCategoryButton />
         </div>
       </PageHeader>
