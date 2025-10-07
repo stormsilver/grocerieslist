@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import {
   DragOverlay,
   DndContext,
@@ -13,6 +13,7 @@ import {
   getFirstCollision,
 } from '@dnd-kit/core';
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { notifyDragStart, notifyDragEnd } from '../drag/DragMonitor';
 
 const reorderPropsFromDragEvent = (event, allItems) => {
   const { active, over } = event;
@@ -44,11 +45,19 @@ export const SortableLists = ({
   const recentlyMovedToNewContainer = useRef(false);
   const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor));
 
+  const scheduleRecentlyMovedReset = useCallback(() => {
+    requestAnimationFrame(() => {
+      recentlyMovedToNewContainer.current = false;
+    });
+  }, []);
+
   const DragOverlayItem = dragOverlayComponent;
 
   const handleDragStart = (event) => {
     const { active } = event;
 
+    recentlyMovedToNewContainer.current = false;
+    notifyDragStart();
     setActiveItem(allItems.find((item) => item.id === active.id));
   };
 
@@ -65,11 +74,19 @@ export const SortableLists = ({
   };
 
   const handleDragEnd = (event) => {
+    scheduleRecentlyMovedReset();
+    notifyDragEnd();
     setActiveItem(null);
 
     const reorderProps = reorderPropsFromDragEvent(event, allItems);
 
     onReordered(reorderProps);
+  };
+
+  const handleDragCancel = () => {
+    scheduleRecentlyMovedReset();
+    notifyDragEnd();
+    setActiveItem(null);
   };
 
   const collisionDetectionStrategy = useCallback(
@@ -118,12 +135,6 @@ export const SortableLists = ({
     [activeItem, itemsByContainer]
   );
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      recentlyMovedToNewContainer.current = false;
-    });
-  }, [allItems]);
-
   return (
     <DndContext
       autoScroll={{
@@ -142,6 +153,7 @@ export const SortableLists = ({
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
       {children}
       <DragOverlay className="drag-overlay">{activeItem ? <DragOverlayItem item={activeItem} /> : null}</DragOverlay>

@@ -1,18 +1,21 @@
-* when adding a new item, add a StoreItem for every store and place it at the top of the order
-* expand all / collapse all button on Products tab
-* allow clicking on the entire category to expand/collapse, not just the arrow
-* searching in Products tab should show matches in all categories, expanding categories as needed, hiding categories that don't have matches
-* add new store
-* delete item
-  -- where do we even put this button?
-* collapse "not at this store" by default
-* sort list of stores in store chooser dropdown
-* shorten debounce time for save
+* In the Products tab:
+  * allow clicking on the entire category to expand/collapse, not just the arrow
+  * when dragging items, dragging an item onto a collapsed category should highlight the category to show that the item will be placed there. it should not expand the category
+  * add a button to expand all / collapse all categories
+  * searching should show matches in all categories, expanding categories as needed, hiding categories that don't have matches
+* In the List tab:
+  * collapse "not at this store" by default
+  * sort list of stores in store chooser dropdown alphabetically
+* backend
+  * when adding a new item, add a StoreItem for every store and place it at the top of the order
 
 
 
 
 # Other stuff
+  * delete item
+    -- where do we even put this button?
+  * add new store
   * delete store
   * delete category
   * auto switch to dark mode

@@ -1,3 +1,28 @@
+# App Overview
+Groceries is a multi-store grocery planning app that keeps a shared catalogue of household products and generates store-specific shopping runs. The UI is a React single-page app served by a Rails API-only backend; data changes are staged client-side and synchronized back to the API in batches.
+
+## Main Workflows
+- **Products inventory (`app/javascript/components/List.js`)** – Maintain the master list of items organized by category. Users can search, collapse sections, drag items between categories (Uncategorized bucket is injected client-side), and mark items as needed/not needed. Modal actions allow creating categories and items, and a debounced sync pushes edits to the API.
+- **Shopping trip planning (`app/javascript/components/Shop.js`)** – Choose a store (`StoreSelector`) to plan a run. Items are split into ordered, unordered, and not-at-this-store buckets. Drag-and-drop reorders aisle order, assigns items to stores, or removes them. The `NeededItemsToggle` can hide already stocked items to generate a focused shopping list while edits sync automatically.
+- **Global layout (`app/javascript/components/Layout.js`)** – Navigation exposes the Products and List tabs and surfaces a live sync indicator driven by `ApiProvider` mutation state so users know when background saves complete.
+
+## Data Model Highlights
+- **Items** belong to an account, carry a `needed` flag, and optionally link to a `Category`; each has many `StoreItem` records describing store placement and ordering.
+- **Categories** are account-scoped groupings for organizing the product catalogue.
+- **Stores** represent physical locations; `StoreItem.order` preserves aisle order per store, and unassigned items are still surfaced for planning.
+- **Accounts/Users** exist for multi-tenant support; `Current` binds the active account/user for each request.
+
+## Frontend Architecture
+- React Router drives the two main routes while contexts (`ApiContext`, `CurrentStoreContext`) share data and selection state.
+- Data fetching and mutations rely on React Query; `BagOfHolding` caches API resources, stages creations/updates/deletions, and issues bulk PATCHes via `Api.synchronize`/`Api.save`.
+- Drag and drop is powered by `@dnd-kit` through `SortableLists`, enabling cross-list moves with custom collision handling and drag overlays.
+- The component library leans on Bootstrap plus Bootstrap Icons with scoped styles under `app/assets/stylesheets/application.bootstrap.scss`.
+
+## Backend API
+- Rails runs in `config.api_only = true` mode and exposes `/api/items`, `/api/categories`, `/api/stores`, and `/api/store_items` endpoints with bulk PATCH handlers (`*_controller#update_bulk`) that accept arrays of records and return 422 validation errors when needed.
+- Middleware (`SnakeCaseParameters`) and `Jbuilder.key_format` keep request params in snake_case while responses are camelCased for the frontend.
+- `ApplicationController#authenticate_user!` currently seeds `Current.user`/`Current.account` with the first records, acting as a stub until real auth is added; seeds (`db/seeds.rb`) provide sample accounts, stores, and items for local development.
+
 # Repository Guidelines
 
 ## Environment Setup

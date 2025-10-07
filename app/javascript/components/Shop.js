@@ -14,15 +14,18 @@ import { NeededItemsToggle } from './shop/NeededItemsToggle';
 
 const updateOrderedItems = (orderedItems, activeItem, overItem) => {
   const activeIndex = orderedItems.findIndex((item) => item.id === activeItem.id);
-  const overIndex = overItem ? orderedItems.findIndex((item) => item.id === overItem.id) : 0;
-  const newItems = arrayMove(orderedItems, activeIndex, overIndex);
+  const fallbackIndex = Math.max(orderedItems.length - 1, 0);
+  const overIndex = overItem ? orderedItems.findIndex((item) => item.id === overItem.id) : fallbackIndex;
+  const normalizedActiveIndex = activeIndex === -1 ? fallbackIndex : activeIndex;
+  const normalizedOverIndex = overIndex === -1 ? fallbackIndex : overIndex;
+  const newItems = arrayMove(orderedItems, normalizedActiveIndex, normalizedOverIndex);
   newItems.forEach((item, index) => {
     item.order = index + 1;
   });
   return newItems;
 };
 
-const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
+const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly, hiddenItemIds }) => {
   const { sync, api } = useApi();
   const [sortedItems, setSortedItems] = useState({
     'current-ordered': [],
@@ -40,6 +43,10 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
     const otherStoreItems = Object.entries(itemsByStore).flatMap(([storeId, storeItems]) =>
       storeId === currentStore.id ? [] : storeItems
     );
+    const applyHidden = (item) => {
+      item.hidden = hiddenItemIds.includes(item.id);
+      return item;
+    };
     setSortedItems({
       'current-ordered': currentStoreItems
         .filter((item) => item.order)
@@ -49,14 +56,19 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
             return sortByName(a, b);
           }
           return diff;
-        }),
-      'current-unordered': currentStoreItems.filter((item) => !item.order).sort(sortByName),
+        })
+        .map(applyHidden),
+      'current-unordered': currentStoreItems
+        .filter((item) => !item.order)
+        .sort(sortByName)
+        .map(applyHidden),
       'other-stores': otherStoreItems
         .filter((item) => !currentStoreItems.some((currentStoreItem) => currentStoreItem.item.id === item.item.id))
         .filter((item, index, self) => self.findIndex((i) => i.item.id === item.item.id) === index)
-        .sort(sortByName),
+        .sort(sortByName)
+        .map(applyHidden),
     });
-  }, [currentStore.id, itemsByStore]);
+  }, [currentStore.id, itemsByStore, hiddenItemIds]);
 
   const itemIdsByContainer = useMemo(
     () =>
@@ -176,19 +188,7 @@ export const Shop = () => {
   const { currentStore } = useCurrentStore();
   const [neededItemsOnly, setNeededItemsOnly] = useState(false);
   const { data: itemsByStore } = useQuery(useApi().api.getItemsByStore());
-  const [renderHack, setRenderHack] = useState(0);
   const [hiddenItemIds, setHiddenItemIds] = useState([]);
-
-  useEffect(() => {
-    if (!itemsByStore) return;
-
-    Object.entries(itemsByStore).forEach(([_storeId, storeItems]) => {
-      storeItems.forEach((item) => {
-        item.hidden = hiddenItemIds.includes(item.id);
-      });
-    });
-    setRenderHack((prev) => prev + 1);
-  }, [itemsByStore, hiddenItemIds]);
 
   if (!itemsByStore) {
     return null;
@@ -205,8 +205,7 @@ export const Shop = () => {
   };
 
   return (
-    // Use key to trigger re-render instead of unsupported DOM attribute
-    <div className="shop-page" key={renderHack}>
+    <div className="shop-page">
       <PageHeader>
         <div className="col-8">
           <StoreSelector />
@@ -217,7 +216,12 @@ export const Shop = () => {
       </PageHeader>
 
       {currentStore ? (
-        <ShoppingList currentStore={currentStore} itemsByStore={itemsByStore} neededItemsOnly={neededItemsOnly} />
+        <ShoppingList
+          currentStore={currentStore}
+          itemsByStore={itemsByStore}
+          neededItemsOnly={neededItemsOnly}
+          hiddenItemIds={hiddenItemIds}
+        />
       ) : (
         <NoStoreSelected />
       )}
