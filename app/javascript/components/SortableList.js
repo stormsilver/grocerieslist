@@ -4,7 +4,12 @@ import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 export const SortableList = ({ containerId, collapsed, items, sortableItemComponent, neededItemsOnly }) => {
   const SortableItem = sortableItemComponent;
-  const { setNodeRef, isOver } = useDroppable({ id: `empty-${containerId}`, data: { containerId } });
+  const { setNodeRef, isOver } = useDroppable({
+    id: `empty-${containerId}`,
+    data: { containerId },
+    disabled: collapsed,
+  });
+  const sortableItems = collapsed ? [] : items;
 
   const containerClassName = classNames('sortable-list', {
     'sortable-list--empty': !collapsed && items.length === 0,
@@ -17,7 +22,7 @@ export const SortableList = ({ containerId, collapsed, items, sortableItemCompon
   };
 
   return (
-    <SortableContext id={containerId} items={items} strategy={verticalListSortingStrategy}>
+    <SortableContext id={containerId} items={sortableItems} strategy={verticalListSortingStrategy}>
       <div ref={setNodeRef} className={containerClassName}>
         {renderItems()}
         {!collapsed && items.length === 0 ? <div className="sortable-list__placeholder" aria-hidden /> : null}

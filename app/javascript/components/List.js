@@ -47,14 +47,8 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
     setSortedItems({ ...sortedItems, [activeContainerId]: newActiveItems, [overContainerId]: newOverItems });
   };
 
-  const onReordered = (d) => {
-    // console.log('onReordered: ', d);
-    setCollapsedCategories((prev) => {
-      const newCollapsedCategories = { ...prev };
-      delete newCollapsedCategories[d.overContainerId];
-      return newCollapsedCategories;
-    });
-
+  const onReordered = (_reorderProps) => {
+    // console.log('onReordered: ', _reorderProps);
     sync();
   };
 
@@ -65,9 +59,14 @@ const AllItemsList = ({ itemsByCategory, categories, collapsedCategories, setCol
   const itemIdsByContainer = useMemo(
     () =>
       Object.fromEntries(
-        sortedCategoryIds.map((categoryId) => [categoryId, (sortedItems[categoryId] || []).map((item) => item.id)])
+        sortedCategoryIds.map((categoryId) => {
+          const items = sortedItems[categoryId] || [];
+          const isCollapsed = collapsedCategories[categoryId];
+          const itemIds = isCollapsed ? [] : items.map((item) => item.id);
+          return [categoryId, itemIds];
+        })
       ),
-    [sortedCategoryIds, sortedItems]
+    [sortedCategoryIds, sortedItems, collapsedCategories]
   );
 
   const categorySections = sortedCategoryIds.map((categoryId) => {
