@@ -3,10 +3,18 @@ import classNames from 'classnames';
 import { CheckCircle } from './CheckCircle';
 import { useApi } from '../contexts/ApiContext';
 
-export const Item = React.forwardRef(({ dragging = false, item, children, ...props }, ref) => {
+export const Item = React.forwardRef(({ dragging = false, item, neededItemsOnly = false, children, ...props }, ref) => {
   const { sync } = useApi();
   const [checked, setChecked] = React.useState(!item.needed);
   const [name, setName] = React.useState(item.name);
+
+  React.useEffect(() => {
+    setChecked(!item.needed);
+  }, [item.needed]);
+
+  React.useEffect(() => {
+    setName(item.name);
+  }, [item.name]);
 
   const onCheckUncheck = (event) => {
     item.needed = !event.target.checked;
@@ -20,7 +28,10 @@ export const Item = React.forwardRef(({ dragging = false, item, children, ...pro
     sync();
   };
 
-  const className = classNames('item d-flex justify-content-between', { dragging });
+  const className = classNames('item d-flex justify-content-between', {
+    dragging,
+    'visually-hidden': neededItemsOnly && checked,
+  });
 
   return (
     <div ref={ref} {...props}>

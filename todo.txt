@@ -1,11 +1,17 @@
+* bug: scrolling down makes the header scroll out of view, it used to be sticky but now it's not
+* bug: in the list view, when in "generate list" mode, if you check an item, the list in the "not at this store" section shows ALL items after the save, not just the unchecked ones
+* scroll speed on actual mobile device is still too slow, despite it being just right on the desktop version. need to increase the acceleration multiplier
 * In the Products tab:
+  * bug: in mobile view, the search bar covers up the expand all button
   * searching should show matches in all categories, expanding categories as needed, hiding categories that don't have matches
 * In the List tab:
   * collapse "not at this store" by default
   * sort list of stores in store chooser dropdown alphabetically
 * backend
   * when adding a new item, add a StoreItem for every store and place it at the top of the order
-
+* upgrade to rails 8
+  - install solid cable
+  - use it for real-time updates to keep multiple clients in sync with each other
 
 
 
@@ -21,8 +27,6 @@
   * remember which tab was last open and load it on refresh
     - remember which store was selected
   * authn/authz
-  * websockets/pusher for real-time updates
-    - or some other thing to keep multiple clients in sync
   * focus modal text input on open
   * opens multiple tabs sometimes when launching from the app icon
 
