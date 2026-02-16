@@ -1,0 +1,15 @@
+one:
+  name: Milk
+  needed: false
+  category: one
+  account: one
+  created_at: <%= Time.zone.local(2024, 1, 1, 0, 0, 0) %>
+  updated_at: <%= Time.zone.local(2024, 1, 1, 0, 0, 0) %>
+
+two:
+  name: Eggs
+  needed: true
+  category: one
+  account: one
+  created_at: <%= Time.zone.local(2024, 1, 2, 0, 0, 0) %>
+  updated_at: <%= Time.zone.local(2024, 1, 2, 0, 0, 0) %>

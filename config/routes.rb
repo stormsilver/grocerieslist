@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  mount ActionCable.server => '/cable'
+
   scope :api do
     resources :stores, only: [:index] do
       collection do

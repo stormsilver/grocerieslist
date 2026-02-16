@@ -33,7 +33,14 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html'],
       reportsDirectory: 'coverage',
-      exclude: ['app/javascript/test/**', '**/*.config.*'],
+      include: ['app/javascript/**/*.{js,jsx,ts,tsx}'],
+      exclude: [
+        'app/javascript/test/**',
+        'app/javascript/application.js',
+        'app/javascript/components/index.js',
+        'app/assets/builds/**',
+        '**/*.config.*',
+      ],
     },
   },
 });

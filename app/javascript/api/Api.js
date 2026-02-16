@@ -45,8 +45,6 @@ export class Api {
   });
 
   synchronize = async () => {
-    console.log('API: synchronize');
-
     const thingsToSync = [this.#items, this.#storeItems];
     const savers = thingsToSync.map((thing) => () => (thing.isEmpty ? Promise.resolve() : thing.save()));
 
@@ -65,8 +63,6 @@ export class Api {
   };
 
   save = async () => {
-    console.log('API: save');
-
     const thingsToSave = [this.#stores, this.#categories];
     const savers = thingsToSave.map((thing) => () => (thing.isEmpty ? Promise.resolve() : thing.save()));
 
@@ -88,8 +84,6 @@ export class Api {
     return {
       queryKey: ['items-by-category'],
       queryFn: async () => {
-        console.log('API: getItemsByCategory');
-
         await this.#categories.fetchAllIfEmpty();
         const items = await this.#items.fetchAllIfEmpty();
 
@@ -109,8 +103,6 @@ export class Api {
     return {
       queryKey: ['items-by-store'],
       queryFn: async () => {
-        console.log('API: getItemsByStore');
-
         await this.#stores.fetchAllIfEmpty();
         const items = await this.#items.fetchAllIfEmpty();
         const storeItems = await this.#storeItems.fetchAll();
@@ -132,20 +124,14 @@ export class Api {
   };
 
   createStoreItem = (storeItem) => {
-    console.log('API: createStoreItem');
-
     this.#storeItems.createOne(storeItem);
   };
 
   createItem = (item) => {
-    console.log('API: createItem');
-
     this.#items.createOne(item);
   };
 
   createCategory = (category) => {
-    console.log('API: createCategory');
-
     this.#categories.createOne(category);
   };
 
@@ -153,8 +139,6 @@ export class Api {
     return {
       queryKey: ['stores'],
       queryFn: async () => {
-        console.log('API: getStores');
-
         return this.#stores.fetchAll();
       },
     };
@@ -164,8 +148,6 @@ export class Api {
     return {
       queryKey: ['categories'],
       queryFn: async () => {
-        console.log('API: getCategories');
-
         return this.#categories.fetchAll();
       },
     };

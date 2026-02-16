@@ -31,10 +31,5 @@
   * opens multiple tabs sometimes when launching from the app icon
 
 
-# Offline First
-  https://electric-sql.com
-  https://neon.tech
-
-
 # Theoretically fixed:
 * bug: in the list view, when in "generate list" mode, if you check an item, the list in the "not at this store" section shows ALL items after the save, not just the unchecked ones
