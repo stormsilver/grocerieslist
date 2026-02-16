@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import { SortableItem } from '../SortableItem';
 
@@ -18,7 +18,11 @@ vi.mock('@dnd-kit/utilities', () => ({
 }));
 
 vi.mock('../Item', () => ({
-  Item: React.forwardRef(({ children }, ref) => <div ref={ref}>{children}</div>),
+  Item: React.forwardRef(({ children, neededItemsOnly }, ref) => (
+    <div ref={ref} data-testid="sortable-item" data-needed={neededItemsOnly ? 'true' : 'false'}>
+      {children}
+    </div>
+  )),
 }));
 
 vi.mock('../DragHandle', () => ({
@@ -26,9 +30,19 @@ vi.mock('../DragHandle', () => ({
 }));
 
 describe('SortableItem', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('renders a drag handle', () => {
     render(<SortableItem item={{ id: '1' }} />);
 
     expect(screen.getByText('Drag')).toBeInTheDocument();
+  });
+
+  it('passes needed-only state to items', () => {
+    render(<SortableItem item={{ id: '1' }} neededItemsOnly={true} />);
+
+    expect(screen.getByTestId('sortable-item')).toHaveAttribute('data-needed', 'true');
   });
 });

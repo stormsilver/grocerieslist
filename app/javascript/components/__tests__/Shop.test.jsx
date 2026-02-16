@@ -1,6 +1,6 @@
 import React from 'react';
-import { describe, expect, it, vi } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Shop } from '../Shop';
@@ -74,6 +74,10 @@ const makeStoreItem = ({ id, itemId, name, needed, order, storeId }) => ({
 });
 
 describe('Shop generate list mode', () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it('filters not-at-this-store to needed items only', async () => {
     itemsByStoreRef.current = {
       1: [
@@ -95,5 +99,32 @@ describe('Shop generate list mode', () => {
 
     expect(screen.getByTestId('shop-other-stores')).toHaveTextContent('Apples');
     expect(screen.getByTestId('shop-other-stores')).not.toHaveTextContent('Bread');
+  });
+
+  it('filters current store items when toggling needed-only', async () => {
+    itemsByStoreRef.current = {
+      1: [
+        makeStoreItem({ id: 'si-1', itemId: 1, name: 'Milk', needed: true, order: 1, storeId: 1 }),
+        makeStoreItem({ id: 'si-2', itemId: 2, name: 'Eggs', needed: false, order: null, storeId: 1 }),
+      ],
+      2: [makeStoreItem({ id: 'si-3', itemId: 3, name: 'Bread', needed: true, order: 2, storeId: 2 })],
+    };
+
+    renderShop();
+
+    const ordered = await screen.findByTestId('shop-current-ordered');
+    const unordered = screen.getByTestId('shop-current-unordered');
+
+    expect(ordered).toHaveTextContent('Milk');
+    expect(unordered).toHaveTextContent('Eggs');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Generate list' }));
+
+    expect(screen.getByTestId('shop-current-ordered')).toHaveTextContent('Milk');
+    expect(screen.getByTestId('shop-current-unordered')).not.toHaveTextContent('Eggs');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Show all' }));
+
+    expect(screen.getByTestId('shop-current-unordered')).toHaveTextContent('Eggs');
   });
 });
