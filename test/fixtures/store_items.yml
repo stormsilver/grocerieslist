@@ -1,11 +1,15 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+one:
+  order: 1
+  store: one
+  item: one
+  account: one
+  created_at: <%= Time.zone.local(2024, 1, 1, 0, 0, 0) %>
+  updated_at: <%= Time.zone.local(2024, 1, 1, 0, 0, 0) %>
 
-# This model initially had no columns defined. If you add columns to the
-# model remove the "{}" from the fixture names and add the columns immediately
-# below each fixture, per the syntax in the comments below
-#
-one: {}
-# column: value
-#
-two: {}
-# column: value
+two:
+  order: 2
+  store: one
+  item: two
+  account: one
+  created_at: <%= Time.zone.local(2024, 1, 2, 0, 0, 0) %>
+  updated_at: <%= Time.zone.local(2024, 1, 2, 0, 0, 0) %>

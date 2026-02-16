@@ -1,6 +1,8 @@
 export class ApiModel {
   id;
 
+  lockVersion;
+
   #newRecord = false;
 
   #destroy = false;
@@ -33,6 +35,7 @@ export class ApiModel {
     return {
       id: this.id,
       _destroy: this.destroy,
+      lockVersion: this.lockVersion,
     };
   }
 }

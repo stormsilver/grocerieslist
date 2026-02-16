@@ -1,1 +1,1 @@
-json.extract! store_item, :id, :created_at, :updated_at, :store_id, :item_id, :order
+json.extract! store_item, :id, :created_at, :updated_at, :lock_version, :store_id, :item_id, :order

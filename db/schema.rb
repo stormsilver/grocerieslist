@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
+ActiveRecord::Schema[7.1].define(version: 2026_02_16_120000) do
   create_table "account_users", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "user_id", null: false
@@ -31,6 +31,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.index ["account_id"], name: "index_categories_on_account_id"
   end
 
@@ -41,6 +42,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.index ["account_id", "name"], name: "index_items_on_account_id_and_name", unique: true
     t.index ["category_id"], name: "index_items_on_category_id"
   end
@@ -52,6 +54,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.index ["account_id"], name: "index_store_items_on_account_id"
     t.index ["item_id"], name: "index_store_items_on_item_id"
     t.index ["store_id", "item_id"], name: "index_store_items_on_store_id_and_item_id", unique: true
@@ -62,6 +65,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_02_19_122421) do
     t.integer "account_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "lock_version", default: 0, null: false
     t.index ["account_id"], name: "index_stores_on_account_id"
   end
 

@@ -1,10 +1,9 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import classNames from 'classnames';
 import { Item } from './Item';
 import { DragHandle } from './DragHandle';
 
-export const SortableItem = ({ item }) => {
+export const SortableItem = ({ item, neededItemsOnly }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: item.id });
 
   const style = {
@@ -12,10 +11,8 @@ export const SortableItem = ({ item }) => {
     transition,
   };
 
-  const className = classNames({ 'visually-hidden': item.hidden });
-
   return (
-    <Item item={item} ref={setNodeRef} style={style} className={className}>
+    <Item item={item} ref={setNodeRef} style={style} neededItemsOnly={neededItemsOnly}>
       <div {...attributes} {...listeners}>
         <DragHandle />
       </div>

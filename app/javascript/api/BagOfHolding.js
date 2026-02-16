@@ -25,6 +25,8 @@ export class BagOfHolding {
 
   #newInstances;
 
+  #snapshots;
+
   #beforeInstantiation;
 
   #beforeSave;
@@ -44,7 +46,7 @@ export class BagOfHolding {
   }
 
   get isEmpty() {
-    return Object.keys(this.#storage).length === 0;
+    return Object.keys(this.#storage).length === 0 && this.#newInstances.length === 0;
   }
 
   async fetchAllIfEmpty() {
@@ -69,6 +71,7 @@ export class BagOfHolding {
       }
       instance.updateFromApi(data);
       this.#storage[instance.id] = instance;
+      this.#snapshots[instance.id] = this.#serialize(instance);
       return instance;
     });
   }
@@ -82,9 +85,14 @@ export class BagOfHolding {
   }
 
   async save() {
-    let instances = this.#newInstances.concat(Object.values(this.#storage));
+    const dirtyInstances = Object.values(this.#storage).filter((instance) => this.#isDirty(instance));
+    let instances = this.#newInstances.concat(dirtyInstances);
     if (this.#beforeSave) {
       instances = this.#beforeSave(instances);
+    }
+
+    if (instances.length === 0) {
+      return;
     }
 
     const payload = instances.map((instance) => instance.toApi());
@@ -107,5 +115,16 @@ export class BagOfHolding {
   #reset() {
     this.#storage = {};
     this.#newInstances = [];
+    this.#snapshots = {};
+  }
+
+  #serialize(instance) {
+    return JSON.stringify(instance.toApi());
+  }
+
+  #isDirty(instance) {
+    const snapshot = this.#snapshots[instance.id];
+    if (!snapshot) return true;
+    return snapshot !== this.#serialize(instance);
   }
 }

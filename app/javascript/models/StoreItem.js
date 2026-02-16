@@ -45,11 +45,12 @@ export class StoreItem extends ApiModel {
     this.item.needed = value;
   }
 
-  updateFromApi({ id, store, order, item }) {
+  updateFromApi({ id, store, order, item, lockVersion }) {
     this.id = id;
     this.store = store;
     this.order = order;
     this.item = item;
+    this.lockVersion = lockVersion;
   }
 
   toApi() {

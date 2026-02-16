@@ -25,7 +25,7 @@ const updateOrderedItems = (orderedItems, activeItem, overItem) => {
   return newItems;
 };
 
-const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly, hiddenItemIds }) => {
+const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly }) => {
   const { sync, api } = useApi();
   const [sortedItems, setSortedItems] = useState({
     'current-ordered': [],
@@ -39,14 +39,12 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly, hiddenItemI
 
   useEffect(() => {
     // console.log('recomputing Shop sortedItems');
-    const currentStoreItems = itemsByStore[currentStore.id] || [];
-    const otherStoreItems = Object.entries(itemsByStore).flatMap(([storeId, storeItems]) =>
-      storeId === currentStore.id ? [] : storeItems
+    const currentStoreKey = String(currentStore.id);
+    const filterNeededItems = (items) => (neededItemsOnly ? items.filter((item) => item.needed) : items);
+    const currentStoreItems = filterNeededItems(itemsByStore[currentStoreKey] || []);
+    const otherStoreItems = filterNeededItems(
+      Object.entries(itemsByStore).flatMap(([storeId, storeItems]) => (storeId === currentStoreKey ? [] : storeItems))
     );
-    const applyHidden = (item) => {
-      item.hidden = hiddenItemIds.includes(item.id);
-      return item;
-    };
     setSortedItems({
       'current-ordered': currentStoreItems
         .filter((item) => item.order)
@@ -56,19 +54,14 @@ const ShoppingList = ({ currentStore, itemsByStore, neededItemsOnly, hiddenItemI
             return sortByName(a, b);
           }
           return diff;
-        })
-        .map(applyHidden),
-      'current-unordered': currentStoreItems
-        .filter((item) => !item.order)
-        .sort(sortByName)
-        .map(applyHidden),
+        }),
+      'current-unordered': currentStoreItems.filter((item) => !item.order).sort(sortByName),
       'other-stores': otherStoreItems
         .filter((item) => !currentStoreItems.some((currentStoreItem) => currentStoreItem.item.id === item.item.id))
         .filter((item, index, self) => self.findIndex((i) => i.item.id === item.item.id) === index)
-        .sort(sortByName)
-        .map(applyHidden),
+        .sort(sortByName),
     });
-  }, [currentStore.id, itemsByStore, hiddenItemIds]);
+  }, [currentStore.id, itemsByStore, neededItemsOnly]);
 
   const itemIdsByContainer = useMemo(
     () =>
@@ -188,20 +181,13 @@ export const Shop = () => {
   const { currentStore } = useCurrentStore();
   const [neededItemsOnly, setNeededItemsOnly] = useState(false);
   const { data: itemsByStore } = useQuery(useApi().api.getItemsByStore());
-  const [hiddenItemIds, setHiddenItemIds] = useState([]);
 
   if (!itemsByStore) {
     return null;
   }
 
   const onToggleNeededItems = () => {
-    const newNeededItemsOnly = !neededItemsOnly;
-    setNeededItemsOnly(newNeededItemsOnly);
-    setHiddenItemIds(
-      Object.entries(itemsByStore).flatMap(([_storeId, storeItems]) =>
-        storeItems.filter((item) => newNeededItemsOnly && !item.needed).map((item) => item.id)
-      )
-    );
+    setNeededItemsOnly((prev) => !prev);
   };
 
   return (
@@ -216,12 +202,7 @@ export const Shop = () => {
       </PageHeader>
 
       {currentStore ? (
-        <ShoppingList
-          currentStore={currentStore}
-          itemsByStore={itemsByStore}
-          neededItemsOnly={neededItemsOnly}
-          hiddenItemIds={hiddenItemIds}
-        />
+        <ShoppingList currentStore={currentStore} itemsByStore={itemsByStore} neededItemsOnly={neededItemsOnly} />
       ) : (
         <NoStoreSelected />
       )}

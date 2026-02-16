@@ -1,13 +1,13 @@
-require "test_helper"
+require 'test_helper'
 
 module ApplicationCable
   class ConnectionTest < ActionCable::Connection::TestCase
-    # test "connects with cookies" do
-    #   cookies.signed[:user_id] = 42
-    #
-    #   connect
-    #
-    #   assert_equal connection.user_id, "42"
-    # end
+    test 'connects with current account' do
+      account = accounts(:one)
+
+      connect
+
+      assert_equal account, connection.current_account
+    end
   end
 end
