@@ -7,7 +7,7 @@
     "build:css:prefix": "postcss ./app/assets/builds/application.css --use=autoprefixer --output=./app/assets/builds/application.css",
     "build:css": "bun build:css:compile && bun build:css:prefix",
     "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"bun build:css\"",
-    "test": "vitest --config vitest.config.mjs",
+    "test": "vitest --config vitest.config.mjs --run",
     "test:watch": "vitest --config vitest.config.mjs --watch",
     "test:coverage": "vitest --config vitest.config.mjs --coverage --run"
   },
