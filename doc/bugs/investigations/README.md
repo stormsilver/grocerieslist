@@ -5,4 +5,5 @@ Each file in this directory covers one reported behavior. Reports are user-repor
 - [Checkbox state rubber-bands after edits](checkbox-rubber-band.md)
 - [Checkbox state diverges between users or refreshes](checkbox-state-divergence.md)
 - [Shop item order jumps after dragging](shop-order-jumps.md)
+- [Store items appear in the wrong order](store-item-order-theories.md)
 - [Drag interactions produce unexpected moves](drag-collision-instability.md)
